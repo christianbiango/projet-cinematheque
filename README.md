@@ -10,10 +10,10 @@ Pour mettre en place le projet, vous aurez besoin de placer vos identifiants imp
 
 Pour cela, vous avez deux chois :
 
-- Copier le fichier d'exemple [`.env.example`](https://github.com/christianbiango/projet-cinematheque/blob/main/.env.example) puis remplacer tous les champs par leur véritable valeur et ensuite renommer le fichier `.env`
+- Copier le fichier d'exemple [`.env.example`](https://github.com/christianbiango/projet-cinematheque/blob/main/backend/.env.example) puis remplacer tous les champs par leur véritable valeur et ensuite renommer le fichier `.env`
 - Créer vous-même un fichier `.env` et écrire les variables d'environnement
 
-Il y a 2 types de variables d'environnement retrouvables dans le fichier [`.env.example`](https://github.com/christianbiango/projet-cinematheque/blob/main/.env.example) :
+Il y a 2 types de variables d'environnement retrouvables dans le fichier [`.env.example`](https://github.com/christianbiango/projet-cinematheque/blob/main/backend/.env.example) :
 
 - VE liées au port.
 
@@ -23,7 +23,7 @@ Il y a 2 types de variables d'environnement retrouvables dans le fichier [`.env.
 
   > Exemple : MONGO_DB_NAME=`Nom de la base de données MongoDB`
 
-## Liste des modules Node utilisés
+## Liste des bibliothèques utilisés
 
 Ils seront installés automatiquement en exécutant la commande `npm i package.json` dans votre terminal. Vous devrez être placé dans le dossier backend du projet, puis recommencer pour installer les dépendances du dossier frontend.
 
@@ -40,6 +40,8 @@ En effet, les dépendances sont listées ici à des fins de documentation
 | mongoose-unique-validator 5.0.0 |
 | nodemon 3.1.0                   |
 | serialize 0.1.3                 |
+| xlsx 0.18.5                     |
+| fs 0.0.1-security               |
 
 ## Questions ou Problèmes
 
