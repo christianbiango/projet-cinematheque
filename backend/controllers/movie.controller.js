@@ -14,7 +14,7 @@ import {
 
 /**
  * Cette fonction  permet de récupérer la liste des films du fichier excel et les enregistrer dans la base de données
- * Aucune donnée retournée
+ * @return {void}
  */
 export const saveMoviesToDB = async () => {
   try {
