@@ -28,7 +28,7 @@ app.use(
     resave: false,
     saveUninitialized: true,
     cookie: {
-      expires: new Date(Date.now() + env.sessionExpiresTime),
+      expires: new Date(Date.now() + +env.sessionExpiresTime),
     },
   })
 );

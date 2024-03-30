@@ -13,7 +13,7 @@ const getMovieModel = async () => {
   try {
     const modelName = env.mongoMoviesCollectionName;
 
-    const { movieDB, userDB } = await connectDatabases();
+    const { movieDB } = await connectDatabases();
 
     if (!movieDB.modelNames().includes(modelName)) {
       const movieSchema = new Schema(
@@ -67,6 +67,7 @@ const getMovieModel = async () => {
 
     return Movie;
   } catch (err) {
+    console.log(err);
     throw err;
   }
 };

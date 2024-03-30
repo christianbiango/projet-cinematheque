@@ -9,10 +9,7 @@ let movieDB, userDB;
  */
 export const connectDatabases = async () => {
   try {
-    const dbNames = [
-      env.mongoMoviesCollectionName,
-      env.mongoUsersCollectionName,
-    ];
+    const dbNames = [env.mongoMoviesDBName, env.mongoUsersDBName];
     const [movieDBName, userDBName] = dbNames;
     if (!movieDB || !userDB) {
       // bases de données
