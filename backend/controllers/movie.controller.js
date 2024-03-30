@@ -27,7 +27,7 @@ export const saveMoviesToDB = async () => {
     const moviesCount = await countDBMovies();
 
     if (moviesCount > 0) {
-      const bulkData = await createMoviesBulkUpdateArray(formattedMovies);
+      const bulkData = createMoviesBulkUpdateArray(formattedMovies);
       await Movie.bulkWrite(bulkData);
       console.log("Mise à jour réussie de tous les films.");
     } else {

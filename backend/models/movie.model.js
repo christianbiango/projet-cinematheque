@@ -4,7 +4,7 @@ import mongooseUniqueValidator from "mongoose-unique-validator";
 
 const { Schema } = mongoose;
 
-const movieSchema = new Schema(
+export const movieSchema = new Schema(
   {
     id: {
       type: Number,
