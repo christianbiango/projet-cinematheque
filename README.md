@@ -6,7 +6,7 @@ Cette cinémathèque répond à la demande de la Cinémathèque Française. Le b
 
 ### 1. fichier **`.env`**
 
-Pour mettre en place le projet, vous aurez besoin de placer vos identifiants importants dans des variables d'environnement, par exemple vos identifiants de connexion à votre base de données MongoDB.
+Afin de mettre en place le projet, vous aurez besoin de placer vos identifiants importants dans des variables d'environnement, par exemple vos identifiants de connexion à votre base de données MongoDB.
 
 Pour cela, vous avez deux chois :
 
@@ -25,17 +25,17 @@ Il y a 2 types de variables d'environnement retrouvables dans le fichier [`.env.
 
 ## Liste des bibliothèques utilisées
 
-Elles seront installés automatiquement en exécutant la commande `npm i package.json` dans votre terminal. Vous devrez être placé dans le dossier backend du projet, puis recommencer pour installer les dépendances du dossier frontend.
+Elles seront installées automatiquement en exécutant la commande `npm i` dans votre terminal. Vous devrez être placé dans le dossier backend du projet, puis recommencer pour installer les dépendances du dossier frontend.
 
-En effet, les dépendances sont listées ici à des fins de documentation
+En effet, les dépendances sont listées ici à des fins de documentation :
 
-| <center>Node</center>           |
-| ------------------------------- |
-| bcrypt 5.1.1                    |
-| cors 2.8.5                      |
-| dotenv 16.4.5                   |
-| express 4.19.2                  |
-| jsonwebtoken 9.0.2              |
+| <center>Node</center>           | <center>ReactJS</center> |
+| ------------------------------- | ------------------------ |
+| bcrypt 5.1.1                    | tailwindcss 3.4.3        |
+| cors 2.8.5                      | axios 1.6.8              |
+| dotenv 16.4.5                   |                          |
+| express 4.19.2                  |                          |
+| jsonwebtoken 9.0.2              |                          |
 | mongoose 8.2.4                  |
 | mongoose-unique-validator 5.0.0 |
 | nodemon 3.1.0                   |
@@ -53,3 +53,4 @@ En effet, les dépendances sont listées ici à des fins de documentation
 Développé en :
 
 - [node 20.11.1](https://nodejs.org/en/blog/release/v20.11.1)
+- [react 18.2.0](https://fr.legacy.reactjs.org/versions)
