@@ -1,11 +1,23 @@
+import { Route, Routes } from "react-router-dom";
+import Login from "./pages/AuthPages/Login";
+import Register from "./pages/AuthPages/Register";
+import Dashboard from "./pages/Dashboard";
 import "./App.css";
+import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
   return (
     <>
-      <h1 className="text-3xl font-bold underline text-center text-red-500">
-        Hello world!
-      </h1>
+      <Routes>
+        {/* Routes privées */}
+        <Route element={<PrivateRoute />}>
+          <Route path="/" element={<Dashboard />}></Route>
+        </Route>
+
+        {/* Routes de connexion */}
+        <Route path="/login" element={<Login />}></Route>
+        <Route path="/register" element={<Register />}></Route>
+      </Routes>
     </>
   );
 }
