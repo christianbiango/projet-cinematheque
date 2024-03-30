@@ -27,7 +27,7 @@ app.use(express.json()); //  Pour parser les données envoyées dans le body de 
 app.use(cors()); // cors rend accessible l'API aux  clients situés sur des addresses web différentes
 
 // MIDDLEWARE SESSION
-/*
+
 app.use(
   session({
     secret: env.sessionSecret,
@@ -38,7 +38,6 @@ app.use(
     },
   })
 );
-*/
 
 // PREFIX ROUTES
 app.use("/api/user", userRouter);
