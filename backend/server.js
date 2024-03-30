@@ -6,7 +6,7 @@ import cors from "cors";
 
 // Utils
 import { saveMoviesToDB } from "./controllers/movie.controller.js";
-import { watchExcelFiles } from "./utils/movie.helper.js";
+import { watchExcelFiles } from "./utils/movie.utils.js";
 
 // ROUTER
 import userRouter from "./router/user.router.js";

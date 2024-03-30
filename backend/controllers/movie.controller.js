@@ -10,7 +10,7 @@ import {
   formatExcelMovies,
   countDBMovies,
   createMoviesBulkUpdateArray,
-} from "../utils/movie.helper.js";
+} from "../utils/movie.utils.js";
 
 /**
  * Cette fonction  permet de récupérer la liste des films du fichier excel et les enregistrer dans la base de données
