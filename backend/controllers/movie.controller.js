@@ -2,7 +2,7 @@ import movieSchema from "../models/movie.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { env } from "../config/index.js";
-import Movie from "../models/movie.model.js";
+import getMovieModel from "../models/movie.model.js";
 
 // Utils
 import {
@@ -14,6 +14,7 @@ import {
 
 /**
  * Cette fonction  permet de récupérer la liste des films du fichier excel et les enregistrer dans la base de données
+ * Aucune donnée retournée
  */
 export const saveMoviesToDB = async () => {
   try {
@@ -25,9 +26,11 @@ export const saveMoviesToDB = async () => {
 
     // Sauvegarder tous les films si la bdd est vide, sinon mettre à jour
     const moviesCount = await countDBMovies();
+    const Movie = await getMovieModel();
 
     if (moviesCount > 0) {
       const bulkData = createMoviesBulkUpdateArray(formattedMovies);
+
       await Movie.bulkWrite(bulkData);
       console.log("Mise à jour réussie de tous les films.");
     } else {

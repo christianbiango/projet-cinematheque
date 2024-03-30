@@ -23,9 +23,9 @@ Il y a 2 types de variables d'environnement retrouvables dans le fichier [`.env.
 
   > Exemple : MONGO_DB_NAME=`Nom de la base de données MongoDB`
 
-## Liste des bibliothèques utilisés
+## Liste des bibliothèques utilisées
 
-Ils seront installés automatiquement en exécutant la commande `npm i package.json` dans votre terminal. Vous devrez être placé dans le dossier backend du projet, puis recommencer pour installer les dépendances du dossier frontend.
+Elles seront installés automatiquement en exécutant la commande `npm i package.json` dans votre terminal. Vous devrez être placé dans le dossier backend du projet, puis recommencer pour installer les dépendances du dossier frontend.
 
 En effet, les dépendances sont listées ici à des fins de documentation
 

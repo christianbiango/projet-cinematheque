@@ -6,8 +6,10 @@ export const env = {
   port: process.env.PORT || 9000,
   token: process.env.TOKEN,
   mongoURI: process.env.MONGO_URI,
-  mongoDBName: process.env.MONGO_DB_NAME,
+  mongoMoviesDBName: process.env.MONGO_MOVIES_DB_NAME,
   mongoMoviesCollectionName: process.env.MONGO_MOVIES_COLLECTION_NAME,
+  mongoUsersDBName: process.env.MONGO_USERS_DB_NAME,
+  mongoUsersCollectionName: process.env.MONGO_USERS_COLLECTION_NAME,
   sessionSecret: process.env.SESSION_SECRET,
-  sessionExpiresTime: process.env.SESSION_EXPIRES_TIME
+  sessionExpiresTime: process.env.SESSION_EXPIRES_TIME,
 };

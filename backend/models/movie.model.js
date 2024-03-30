@@ -1,53 +1,74 @@
-import mongoose from "mongoose";
+import mongoose, { connect } from "mongoose";
 import { env } from "../config/index.js";
 import mongooseUniqueValidator from "mongoose-unique-validator";
+import { connectDatabases } from "../utils/database.conn.js";
 
 const { Schema } = mongoose;
 
-export const movieSchema = new Schema(
-  {
-    id: {
-      type: Number,
-      required: true,
-      unique: true,
-    },
-    titre: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    titreOriginal: {
-      type: String,
-    },
-    realisateurs: {
-      type: String,
-      required: true,
-    },
-    anneeProduction: {
-      type: Number,
-      required: true,
-    },
-    nationalite: {
-      type: String,
-      required: true,
-    },
-    duree: {
-      type: String,
-      required: true,
-    },
-    genre: {
-      type: String,
-    },
-    synopsis: {
-      type: String,
-      required: true,
-    },
-  },
-  { timestamps: { createdAt: true } }
-);
+/**
+ * Cette fonction permet de définir le modèle d'un utilisateur (User) ou le récupérer s'il existe déjà
+ * @returns {Object} Movie - Model représentant les films dans la base de données
+ */
+const getMovieModel = async () => {
+  try {
+    const modelName = env.mongoMoviesCollectionName;
 
-movieSchema.plugin(mongooseUniqueValidator);
+    const { movieDB, userDB } = await connectDatabases();
 
-const Movie = mongoose.model(env.mongoMoviesCollectionName, movieSchema);
+    if (!movieDB.modelNames().includes(modelName)) {
+      const movieSchema = new Schema(
+        {
+          id: {
+            type: Number,
+            required: true,
+            unique: true,
+          },
+          titre: {
+            type: String,
+            required: true,
+            unique: true,
+          },
+          titreOriginal: {
+            type: String,
+          },
+          realisateurs: {
+            type: String,
+            required: true,
+          },
+          anneeProduction: {
+            type: Number,
+            required: true,
+          },
+          nationalite: {
+            type: String,
+            required: true,
+          },
+          duree: {
+            type: String,
+            required: true,
+          },
+          genre: {
+            type: String,
+          },
+          synopsis: {
+            type: String,
+            required: true,
+          },
+        },
+        { timestamps: { createdAt: true } }
+      );
 
-export default Movie;
+      movieSchema.plugin(mongooseUniqueValidator);
+
+      movieDB.model(modelName, movieSchema);
+    }
+
+    const Movie = movieDB.model(modelName);
+
+    return Movie;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export default getMovieModel;

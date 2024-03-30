@@ -16,12 +16,6 @@ const app = express();
 // PORT
 const PORT = env.port;
 
-// BDD MONGOOSE
-mongoose
-  .connect(env.mongoURI, { dbName: env.mongoDBName })
-  .then(() => console.log("Connexion à mongoDB réussie !"))
-  .catch((error) => console.log(error));
-
 // MIDDLEWARE
 app.use(express.json()); //  Pour parser les données envoyées dans le body de la requête (en format JSON).
 app.use(cors()); // cors rend accessible l'API aux  clients situés sur des addresses web différentes
