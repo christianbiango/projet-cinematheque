@@ -1,7 +1,7 @@
 import xlsx from "xlsx";
 import fs from "fs";
 import { env } from "../config/index.js";
-import Movie from "../models/movie.model.js";
+import getMovieModel from "../models/movie.model.js";
 
 // movie controller
 import { saveMoviesToDB } from "../controllers/movie.controller.js";
@@ -73,8 +73,13 @@ export const watchExcelFiles = () => {
   console.log("Watching Excel file film.xlsx...");
 };
 
-export const countDBMovies = () => {
-  return Movie.countDocuments();
+export const countDBMovies = async () => {
+  try {
+    const Movie = await getMovieModel();
+    return Movie.countDocuments();
+  } catch (err) {
+    throw err;
+  }
 };
 
 /**
