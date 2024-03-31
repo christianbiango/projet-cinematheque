@@ -1,6 +1,5 @@
 import movieSchema from "../models/movie.model.js";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { env } from "../config/index.js";
 import getMovieModel from "../models/movie.model.js";
 
@@ -10,11 +9,11 @@ import {
   formatExcelMovies,
   countDBMovies,
   createMoviesBulkUpdateArray,
-} from "../utils/movie.helper.js";
+} from "../utils/movie.utils.js";
 
 /**
  * Cette fonction  permet de récupérer la liste des films du fichier excel et les enregistrer dans la base de données
- * Aucune donnée retournée
+ * @return {void}
  */
 export const saveMoviesToDB = async () => {
   try {

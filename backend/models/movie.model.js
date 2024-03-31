@@ -1,7 +1,7 @@
 import mongoose, { connect } from "mongoose";
 import { env } from "../config/index.js";
 import mongooseUniqueValidator from "mongoose-unique-validator";
-import { connectDatabases } from "../utils/database.conn.js";
+import { connectDatabases } from "../database/database.conn.js";
 
 const { Schema } = mongoose;
 
