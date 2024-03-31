@@ -2,6 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   data: [],
+  totalMovies: null,
+  currentPage: 1,
   loading: false,
   error: false,
 };
@@ -19,8 +21,12 @@ export const moviesSlice = createSlice({
       draft.error = true;
     },
     sendMovies: (draft, action) => {
+      const { movies, totalMovies, currentPage } = action.payload;
       draft.loading = false;
-      draft.data = action.payload;
+      draft.data = movies;
+      draft.totalMovies = totalMovies;
+      draft.currentPage =
+        typeof currentPage === "number" ? currentPage : +currentPage;
     },
   },
 });

@@ -107,12 +107,16 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const getDBMovies = async () => {
+  const getHomeMovies = async (pageFirstMovie, pageLastMovie, currentPage) => {
     try {
-      const { data, status } = await axios.get(URL.GET_MOVIES, {
+      const { data, status } = await axios.get(URL.GET_HOME_MOVIES, {
+        params: {
+          pageFirstMovie: pageFirstMovie,
+          pageLastMovie: pageLastMovie,
+          currentPage: currentPage,
+        },
         withCredentials: true,
       });
-      console.log("data", data);
 
       if (status === 200) {
         return data;
@@ -131,7 +135,7 @@ export const AuthProvider = ({ children }) => {
         logout,
         isLoggedIn,
         register,
-        getDBMovies,
+        getHomeMovies,
       }}
     >
       {children}
