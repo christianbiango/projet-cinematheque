@@ -4,8 +4,9 @@ import { AuthContext } from "../../context/AuthContext";
 
 export default function Login() {
   const [formData, setFormData] = useState([]);
-  const { user, isLoading, login } = useContext(AuthContext);
-  const [errorMessage, setErrorMessage] = useState("");
+  const { user, login } = useContext(AuthContext);
+  const [emailErrorMessage, setEmailErrorMessage] = useState("");
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
 
   const navigate = useNavigate(); // Hook de react router dom
 
@@ -16,7 +17,6 @@ export default function Login() {
   const _onChangeInput = (e) => {
     const { name, value } = e.target;
     setFormData((formData) => ({ ...formData, [name]: value }));
-    console.log(formData);
   };
 
   const handleLogin = async () => {
@@ -26,12 +26,48 @@ export default function Login() {
 
   const submitForm = (e) => {
     e.preventDefault();
-    if (formData.email.length < 3 || formData.password.length < 1) {
-      setErrorMessage(
-        "Le pseudo doit comporter au moins 3 caractères et le mot de passe 5 caractères"
-      );
-    } else {
+    checkFormInput();
+    if (emailErrorMessage === "" && passwordErrorMessage === "") {
       handleLogin();
+    }
+  };
+
+  const checkFormInput = () => {
+    const checkEmail = formData.email.trim().toLowerCase();
+    const checkPassword = formData.password.trim();
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/; // Au moins 8 caractères, avec au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial parmi : @$!%*?&
+
+    switch (true) {
+      // Email
+      case checkEmail.length === 0 || checkEmail === null:
+        setEmailErrorMessage("Vous avez oublié votre adresse email ?");
+        break;
+      case checkEmail.length > 32:
+        setEmailErrorMessage(
+          "L'adresse email ne doit pas dépasser 32 caractères."
+        );
+        break;
+      case !emailRegex.test(checkEmail):
+        setEmailErrorMessage("L'adresse email est invalide.");
+        break;
+      case !typeof checkEmail === "string":
+        setEmailErrorMessage(
+          "L'adresse email doit contenir uniquement des chaînes de caractères."
+        );
+        break;
+      // Password
+      case checkPassword.length === 0 || checkPassword === null:
+        setPasswordErrorMessage("Vous n'avez pas saisi de mot de passe.");
+        break;
+      case !typeof checkPassword === "string":
+        setPasswordErrorMessage("Le format du mot de passe est incorrecte");
+        break;
+      default:
+        setEmailErrorMessage("");
+        setPasswordErrorMessage("");
     }
   };
 
@@ -39,27 +75,34 @@ export default function Login() {
     <>
       <main className="form-container">
         <h1>Connectez-vous à la Cinémathèque</h1>
-        {errorMessage && <p className="error-message">{errorMessage}</p>}
         <form className="login-form" onSubmit={submitForm}>
           {/* Email */}
-          <label htmlFor="email">Entrez votre Email : </label>
+          <label htmlFor="email">Entrez votre Email :*</label>
           <input
             id="email"
             type="email"
             placeholder="Entrez votre email"
             name="email"
+            required
             onChange={_onChangeInput}
           ></input>
+          {emailErrorMessage && (
+            <span className="error-message">{emailErrorMessage}</span>
+          )}
 
           {/* Mot de passe */}
-          <label htmlFor="password">Entrez votre Mot de passe :</label>
+          <label htmlFor="password">Entrez votre Mot de passe :*</label>
           <input
             id="password"
             type="password"
             placeholder="Entrez votre mot de passe"
             name="password"
+            required
             onChange={_onChangeInput}
           ></input>
+          {passwordErrorMessage && (
+            <span className="error-message">{passwordErrorMessage}</span>
+          )}
 
           {/* Submit */}
           <input type="submit" value="Se connecter"></input>

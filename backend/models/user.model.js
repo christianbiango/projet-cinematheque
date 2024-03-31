@@ -34,7 +34,7 @@ const getUserModel = async () => {
           likedMovies: [
             { type: Schema.Types.ObjectId, ref: `${moviesDBName}.movies` },
           ],
-          suggestedMovies: [
+          seeLaterMovies: [
             { type: Schema.Types.ObjectId, ref: `${moviesDBName}.movies` },
           ],
         },

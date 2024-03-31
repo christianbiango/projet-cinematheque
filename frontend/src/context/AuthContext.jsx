@@ -31,7 +31,12 @@ export const AuthProvider = ({ children }) => {
         return true;
       }
     } catch (err) {
-      if (err.response.status === 404 || err.response.status === 400)
+      console.log(err);
+      if (
+        err.response.status === 404 ||
+        err.response.status === 400 ||
+        err.response.status === 401
+      )
         console.log(err.response.data.message);
       // Mail ou mot de passe incorrecte
       else console.log(err);
@@ -72,6 +77,10 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (err) {
       console.log(err);
+      if (err.response.status === 400)
+        console.log(err.response.data.message); // Le middleware a échoué
+      else console.log(err);
+      setIsLoading(false);
     }
   };
 

@@ -8,10 +8,13 @@ import {
 
 import { getMovies } from "../controllers/movie.controller.js";
 
+import loginMiddleware from "../middleware/LoginMiddleware.js";
+import registerMiddleware from "../middleware/RegisterMiddleware.js";
+
 const router = express.Router();
 
-router.post("/signup", signup);
-router.post("/login", login);
+router.post("/signup", registerMiddleware, signup);
+router.post("/login", loginMiddleware, login);
 router.get("/session", checkSession);
 router.delete("/logout", logout);
 

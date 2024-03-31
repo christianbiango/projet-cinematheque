@@ -41,29 +41,40 @@ export const signup = async (req, res) => {
  */
 export const login = async (req, res) => {
   try {
+    /*
+    if (req.session?.loginTries && req.session?.loginTries >= 2)
+      return res.status(401).json({
+        message: `Trop de tentatives de connexion échouées (${req.session.loginTries}). Veuillez réessayer ultérieurement.`,
+      });
+      */
+
     const wrongCredentials = "Le mail ou le mot de passe sont incorrectes.";
     const userModel = await getUserModel();
 
     const user = await userModel.findOne({ email: req.body.email });
 
     //  si l'user n'est pas trouvé, renvoit une erreur 404.
-    if (!user) return res.status(404).json({ message: wrongCredentials });
+    if (!user) {
+      req.session.loginTries++;
+      return res.status(404).json({ message: wrongCredentials });
+    }
     // compare le mot de passe fourni dans la requete
 
     const comparePassword = await bcrypt.compare(
       req.body.password,
       user.password
     );
-    if (!comparePassword)
+    if (!comparePassword) {
+      req.session.loginTries++;
+      console.log(req.session.loginTries);
       return res.status(400).json({ message: wrongCredentials });
+    }
 
     // Création de la session
     req.session.userId = user._id;
     req.session.username = user.username;
     // Sauvegarder la session
     await req.session.save();
-    console.log("login", req.session);
-    console.log(req.sessionID);
     res.status(200).json({
       message: "Connexion réussie !",
       user: { id: user._id, username: user.username },
