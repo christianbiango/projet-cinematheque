@@ -1,6 +1,5 @@
 import movieSchema from "../models/movie.model.js";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { env } from "../config/index.js";
 import getMovieModel from "../models/movie.model.js";
 

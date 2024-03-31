@@ -1,9 +1,9 @@
 import React, { useEffect, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { Navigate, Outlet } from "react-router-dom";
-import axios from "axios";
 import Logout from "./Logout";
 
+// Component parent de toutes les routes privées
 const PrivateRoute = () => {
   const { user } = useContext(AuthContext);
 

@@ -13,24 +13,41 @@ export const AuthProvider = ({ children }) => {
     isLoggedIn();
   }, []);
 
+  /**
+   * Cette fonction tente de connecter l'utilisateur à la Cinémathèque
+   * @param {Object} dataForm - Formulaire remplit
+   * @returns {boolean} - True : Connexion réussie. Status 404 || 400 : Connexion échouée
+   */
   const login = async (dataForm) => {
     setIsLoading(true);
     try {
-      const { data, status } = await axios.post(URL.USER_LOGIN, dataForm);
+      const { data, status } = await axios.post(URL.USER_LOGIN, dataForm, {
+        withCredentials: true,
+      }); // data = réponse d'axios. // withCredentials : envoit du cookie de session à l'API
 
       if (status === 200) {
-        setUser(data);
+        setUser(data.user);
         setIsLoading(false);
         return true;
       }
     } catch (err) {
-      console.log(err);
+      if (err.response.status === 404 || err.response.status === 400)
+        console.log(err.response.data.message);
+      // Mail ou mot de passe incorrecte
+      else console.log(err);
+      setIsLoading(false);
     }
   };
 
+  /**
+   * Cette fonction déconnecte  l'utilisateur et supprime le cookie de session
+   * @return {void}
+   */
   const logout = async () => {
     try {
-      await axios.delete(URL.LOGOUT);
+      const { data } = await axios.delete(URL.USER_LOGOUT, {
+        withCredentials: true,
+      });
       setUser(null);
     } catch (err) {
       console.log(err);
@@ -38,10 +55,17 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  /**
+   * Cette fonction tente d'inscrire l'utilisateur à la Cinémathèque
+   * @param {Object} dataForm - Formulaire remplit
+   * @returns {boolean} - True : inscription réussie || void : Inscription échoéue
+   */
   const register = async (dataForm) => {
     setIsLoading(true);
     try {
-      const { data, status } = await axios.post(URL.USER_SIGNUP, dataForm);
+      const { data, status } = await axios.post(URL.USER_SIGNUP, dataForm, {
+        withCredentials: true,
+      });
       if (status === 201) {
         setIsLoading(false);
         return true;
@@ -51,16 +75,25 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  /**
+   * Cette fonction vérifie à chaque action si l'utilisateur est connecté. Déclenchée uniquement sur les routes privées.
+   * @returns {void} - Applique le state User à null si aucune session détectée.
+   */
   const isLoggedIn = async () => {
     setIsLoading(true);
     try {
-      const { data, status } = await axios.get(URL.USER_SESSION);
+      const { data } = await axios.get(URL.USER_SESSION, {
+        withCredentials: true,
+      });
 
-      status === 200 ? setUser(data) : null;
+      data.isLoggedIn ? setUser(data.user) : setUser(null);
 
       setIsLoading(false);
     } catch (err) {
       console.log(err);
+      if (err.response.status === 401) console.log(err.response.data.message);
+      // Veuillez-vous connecter pour accéder à la Cinémathèqie
+      else console.log(err);
       setIsLoading(false);
     }
   };
@@ -72,6 +105,7 @@ export const AuthProvider = ({ children }) => {
         isLoading,
         login,
         logout,
+        isLoggedIn,
         register,
       }}
     >

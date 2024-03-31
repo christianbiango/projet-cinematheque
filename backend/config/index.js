@@ -12,4 +12,6 @@ export const env = {
   mongoUsersCollectionName: process.env.MONGO_USERS_COLLECTION_NAME,
   sessionSecret: process.env.SESSION_SECRET,
   sessionExpiresTime: process.env.SESSION_EXPIRES_TIME,
+  sessionAutoRemoveInterval: process.env.SESSION_AUTOREMOVE_INTERVAL,
+  mongoSessionsCollectionName: process.env.MONGO_SESSIONS_COLLECTION_NAME,
 };

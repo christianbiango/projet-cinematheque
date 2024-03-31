@@ -4,13 +4,13 @@ import { AuthContext } from "../../context/AuthContext";
 
 const Register = () => {
   const [formData, setFormData] = useState([]);
-  const { user, isLoading, register } = useContext(AuthContext);
+  const { user, register } = useContext(AuthContext);
   const [errorMessage, setErrorMessage] = useState("");
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) navigate("/dashboard");
+    if (user) navigate("/");
   }, []);
 
   const _onChangeInput = (e) => {

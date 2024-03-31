@@ -11,7 +11,7 @@ export default function Login() {
 
   useEffect(() => {
     if (user) navigate("/");
-  }, []);
+  }, [user]);
 
   const _onChangeInput = (e) => {
     const { name, value } = e.target;
@@ -19,13 +19,14 @@ export default function Login() {
     console.log(formData);
   };
 
-  const handleLogin = () => {
-    if (login(formData)) navigate("/");
+  const handleLogin = async () => {
+    const hasLoggedIn = await login(formData);
+    if (hasLoggedIn) navigate("/");
   };
 
   const submitForm = (e) => {
     e.preventDefault();
-    if (formData.email.length < 3 || formData.password.length < 5) {
+    if (formData.email.length < 3 || formData.password.length < 1) {
       setErrorMessage(
         "Le pseudo doit comporter au moins 3 caractères et le mot de passe 5 caractères"
       );
