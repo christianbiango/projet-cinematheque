@@ -41,3 +41,13 @@ export const saveMoviesToDB = async () => {
     throw err;
   }
 };
+
+export const getMovies = async (req, res) => {
+  try {
+    const Movie = await getMovieModel();
+    const movies = await Movie.find().limit(5);
+    res.status(200).json({ movies: movies });
+  } catch (err) {
+    throw err;
+  }
+};

@@ -98,6 +98,21 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const getDBMovies = async () => {
+    try {
+      const { data, status } = await axios.get(URL.GET_MOVIES, {
+        withCredentials: true,
+      });
+      console.log("data", data);
+
+      if (status === 200) {
+        return data;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -107,6 +122,7 @@ export const AuthProvider = ({ children }) => {
         logout,
         isLoggedIn,
         register,
+        getDBMovies,
       }}
     >
       {children}
