@@ -5,15 +5,19 @@ import { Link } from "react-router-dom";
 import { fetchFailure, sendMovies } from "../redux/movies.reducer.js";
 import * as USER_ACTION from "../redux/users.reducer.js"; // Nécessite un import contrairement à movies.reducer
 
-const Home = () => {
+const FavouriteMovies = ({ props }) => {
   const store = useSelector((state) => state);
   const dispatch = useDispatch();
-  const { getHomeMovies, getMoviesPreferences, user, patchMoviePreference } =
-    useContext(AuthContext);
+  const {
+    getMoviesPreferences,
+    getMoviePreference,
+    user,
+    patchMoviePreference,
+  } = useContext(AuthContext);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const [moviesPerPage] = useState(50);
+  const [moviesPerPage] = useState(10);
 
   useEffect(() => {
     const pageFirstMovie = currentPage * moviesPerPage - moviesPerPage;
@@ -25,13 +29,17 @@ const Home = () => {
           "seenMovies favouriteMovies seeLaterMovies"
         );
 
-        const homeMovies = await getHomeMovies(
-          pageFirstMovie,
-          pageLastMovie,
-          currentPage
-        );
+        const moviesPreference = await getMoviePreference({
+          preferenceKey: props,
+          pageFirstMovie: pageFirstMovie,
+          pageLastMovie: pageLastMovie,
+          currentPage: currentPage,
+        });
+        console.log(moviesPreference);
+
         dispatch(USER_ACTION.sendMoviesPreferences(moviesPreferences));
-        dispatch(sendMovies(homeMovies.data));
+
+        dispatch(sendMovies(moviesPreference));
       } catch (err) {
         console.error(err);
         dispatch(fetchFailure());
@@ -67,7 +75,7 @@ const Home = () => {
         {user.username.toUpperCase()}
       </h1>
       <div className="movie-container">
-        {store.movies.data ? (
+        {store ? (
           store.movies.data.map((movie, index) => {
             return (
               <div key={index}>
@@ -147,23 +155,25 @@ const Home = () => {
       {/* Pagination */}
       {store.movies.totalMovies ? (
         <ul className="flex justify-center mt-4">
-          {[
-            ...Array(Math.ceil(store.movies.totalMovies / moviesPerPage) + 1),
-          ].map((_, index) => (
-            <li key={index}>
-              <button
-                onClick={() => paginate(index + 1)}
-                className={`px-3 py-1 mx-1 rounded-md ${
-                  index + 1 === currentPage
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 text-gray-700"
-                }`}
-              >
-                {index + 1}
-              </button>
-            </li>
-          ))}
+          {[...Array(Math.ceil(store.movies.totalMovies / moviesPerPage))].map(
+            (_, index) => (
+              <li key={index}>
+                <button
+                  onClick={() => paginate(index + 1)}
+                  className={`px-3 py-1 mx-1 rounded-md ${
+                    index + 1 === currentPage
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200 text-gray-700"
+                  }`}
+                >
+                  {index + 1}
+                </button>
+              </li>
+            )
+          )}
         </ul>
+      ) : store && store.movies.totalMovies === 0 ? (
+        <span>Aucun film à afficher :) </span>
       ) : (
         <span>Chargement...</span>
       )}
@@ -171,4 +181,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default FavouriteMovies;

@@ -14,4 +14,6 @@ export const env = {
   sessionExpiresTime: process.env.SESSION_EXPIRES_TIME,
   sessionAutoRemoveInterval: process.env.SESSION_AUTOREMOVE_INTERVAL,
   mongoSessionsCollectionName: process.env.MONGO_SESSIONS_COLLECTION_NAME,
+  defaultFirstPage: process.env.DEFAULT_FIRST_PAGE,
+  moviesPerPage: process.env.MOVIES_PER_PAGE,
 };

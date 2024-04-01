@@ -1,6 +1,7 @@
 import React, { useEffect, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { Navigate, Outlet } from "react-router-dom";
+import NavBar from "./NavBar";
 import Logout from "./Logout";
 
 /**
@@ -13,6 +14,7 @@ const PrivateRoute = () => {
 
   return user ? (
     <>
+      <NavBar />
       <Outlet />
       <Logout />
     </>

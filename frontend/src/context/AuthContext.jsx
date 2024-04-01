@@ -168,6 +168,35 @@ export const AuthProvider = ({ children }) => {
   };
 
   /**
+   * Cette fonction récupère la préférence de films associées à un utilisateur. Filtre les résultats par lot de 50 pour la pagination
+   * Si status 200 : Retourne unobjet contenant les données
+   * Sinon, aucune donnée retournée
+   */
+  const getMoviePreference = async (query) => {
+    try {
+      const { pageFirstMovie, pageLastMovie, preferenceKey, currentPage } =
+        query;
+
+      const { data, status } = await axios.get(URL.GET_MOVIE_PREFERENCE, {
+        params: {
+          userId: user.id,
+          preferenceKey: preferenceKey,
+          pageFirstMovie: pageFirstMovie,
+          pageLastMovie: pageLastMovie,
+          currentPage: currentPage,
+        },
+        withCredentials: true,
+      });
+
+      if (status === 200) {
+        return data;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  /**
    * Cette fonction toggle les préférences de films d'un utilisateur
    * Si status 200/201 : Retourne unobjet contenant les données
    * Sinon, aucune donnée retournée
@@ -203,6 +232,7 @@ export const AuthProvider = ({ children }) => {
         getHomeMovies,
         getMoviesPreferences,
         patchMoviePreference,
+        getMoviePreference,
       }}
     >
       {children}

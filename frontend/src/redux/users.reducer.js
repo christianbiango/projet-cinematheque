@@ -4,6 +4,9 @@ const initialState = {
   seenMovies: [],
   favouriteMovies: [],
   seeLaterMovies: [],
+  totalseenMovies: null,
+  totalFavoriteMovies: null,
+  totalSeeLaterMovies: null,
   loading: false,
   error: false,
 };
@@ -30,6 +33,10 @@ export const userSlice = createSlice({
       draft.seenMovies = seenMovies;
       draft.favouriteMovies = favouriteMovies;
       draft.seeLaterMovies = seeLaterMovies;
+
+      draft.totalseenMovies = seenMovies.length;
+      draft.totalFavoriteMovies = favouriteMovies.length;
+      draft.totalSeeLaterMovies = seeLaterMovies.length;
     },
     /**
      * Cette méthode envoit dans le store les préférences de films associées à un utilisateur, récupérées en base de données.
@@ -44,6 +51,8 @@ export const userSlice = createSlice({
       draft.seenMovies = [];
       draft.favouriteMovies = [];
       draft.seeLaterMovies = [];
+      (draft.totalFavoriteMovies = null), (draft.totalseenMovies = null);
+      draft.totalSeeLaterMovies = null;
       draft.loading = false;
       draft.error = false;
     },

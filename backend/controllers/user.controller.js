@@ -168,6 +168,45 @@ export const getMoviesPreferences = async (req, res) => {
 };
 
 /**
+ * Cette fonction récupère la préférence  de films associées à un utilisateur. Filtre les résultats par lot de 50 pour la pagination
+ * @returns {Object} - Status 200 si la requête a réussi
+ */
+export const getMoviePreference = async (req, res) => {
+  try {
+    // TODO: peut-etre ajouter getUserModel à un middleware pour pouvori le récup dans chaque callback
+    const userModel = await getUserModel();
+
+    const {
+      userId,
+      pageFirstMovie,
+      pageLastMovie,
+      currentPage,
+      preferenceKey,
+    } = req.query;
+
+    const moviesPreference = await userModel
+      .findById(userId, preferenceKey)
+      .select(preferenceKey);
+
+    const totalMovies = moviesPreference[preferenceKey].length;
+
+    const filteredMovies = moviesPreference[preferenceKey].slice(
+      pageFirstMovie,
+      pageLastMovie
+    );
+    console.log(filteredMovies);
+
+    return res.status(200).json({
+      movies: filteredMovies,
+      totalMovies: totalMovies,
+      currentPage: currentPage,
+    });
+  } catch (err) {
+    console.log(err.message);
+  }
+};
+
+/**
  * Cette fonction toggle les préférences de films d'un utilisateur
  * @returns {Object} - Status 201 : nouvelle préférence ajoutée / Status 200 : préférence supprimée
  */
@@ -184,25 +223,6 @@ export const patchMoviePreference = async (req, res) => {
     const isInPreference = mongoUser[preferenceKey].some(
       (preferenceMovie) => movie.id === preferenceMovie.id
     );
-
-    /*
-    const bulkOperations = [];
-    if (isInPreference) {
-      bulkOperations.push({
-        updateOne: {
-          filter: { _id: userId },
-          update: { $pull: { preferenceKey: { id: movie.id } } },
-        },
-      });
-    } else {
-      bulkOperations.push({
-        updateOne: {
-          filter: { _id: userId },
-          update: { $addToSet: { preferenceKey: movie } }, // Ajoute directement l'objet movie à l'array
-        },
-      });
-    }
-    */
 
     // 2. Vérifier si la préférence demandée sur le frontend est déjà présente.
     // Si oui : supprimer

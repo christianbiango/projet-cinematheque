@@ -7,6 +7,7 @@ import {
   checkSession,
   logout,
   getMoviesPreferences,
+  getMoviePreference,
   patchMoviePreference,
 } from "../controllers/user.controller.js";
 
@@ -32,6 +33,8 @@ router.get(
   prepareMoviesOperationsMiddleware,
   getMoviesPreferences
 );
+
+router.get("/movie-preference", getMoviePreference);
 
 router.patch(
   "/patch/movie-preference",
