@@ -43,6 +43,8 @@ export const formatExcelMovies = (movies) => {
       // ajouter l'ID et le titre à uniqueIdsAndTitles
       uniqueIdsAndTitles.push({ id: movie.Id, titre: movie.Titre });
 
+      const regexRemoveAngleBrackets = /<[^>]*>/g;
+
       // film formatté
       return {
         id: movie.Id,
@@ -52,7 +54,7 @@ export const formatExcelMovies = (movies) => {
         nationalite: movie["Nationalité"],
         duree: movie["Durée"],
         genre: movie.Genre,
-        synopsis: movie.Synopsis,
+        synopsis: movie.Synopsis.replace(regexRemoveAngleBrackets, ""),
       };
     }
   });

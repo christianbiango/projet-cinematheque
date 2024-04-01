@@ -13,7 +13,7 @@ Pour cela, vous avez deux chois :
 - Copier le fichier d'exemple [`.env.example`](https://github.com/christianbiango/projet-cinematheque/blob/main/backend/.env.example) puis remplacer tous les champs par leur véritable valeur et ensuite renommer le fichier `.env`
 - Créer vous-même un fichier `.env` et écrire les variables d'environnement
 
-Il y a 2 types de variables d'environnement retrouvables dans le fichier [`.env.example`](https://github.com/christianbiango/projet-cinematheque/blob/main/backend/.env.example) :
+Voici quelques types de variables d'environnement retrouvables dans le fichier [`.env.example`](https://github.com/christianbiango/projet-cinematheque/blob/main/backend/.env.example) :
 
 - VE liées au port.
 
@@ -23,19 +23,24 @@ Il y a 2 types de variables d'environnement retrouvables dans le fichier [`.env.
 
   > Exemple : MONGO_DB_NAME=`Nom de la base de données MongoDB`
 
+- VE liées aux sessions.
+  > Exemple : SESSION_SECRET=`Clé secrète pour signer les cookies des sessions`
+
 ## Liste des bibliothèques utilisées
 
 Elles seront installées automatiquement en exécutant la commande `npm i` dans votre terminal. Vous devrez être placé dans le dossier backend du projet, puis recommencer pour installer les dépendances du dossier frontend.
 
 En effet, les dépendances sont listées ici à des fins de documentation :
 
-| <center>Node</center>           | <center>ReactJS</center> |
+| <center>NodeJS</center>         | <center>ReactJS</center> |
 | ------------------------------- | ------------------------ |
 | bcrypt 5.1.1                    | tailwindcss 3.4.3        |
+| connect-mongo: 5.1.0            | react 18.2.0             |
 | cors 2.8.5                      | axios 1.6.8              |
-| dotenv 16.4.5                   |                          |
-| express 4.19.2                  |                          |
-| jsonwebtoken 9.0.2              |                          |
+| express-session 1.18.0          | react-dom 18.2.0         |
+| validator 13.11.0               | react-redux 9.1.0        |
+| dotenv 16.4.5                   | react-router-dom 6.22.3  |
+| express 4.19.2                  | @reduxjs/toolkit 2.2.2   |
 | mongoose 8.2.4                  |
 | mongoose-unique-validator 5.0.0 |
 | nodemon 3.1.0                   |
@@ -52,5 +57,5 @@ En effet, les dépendances sont listées ici à des fins de documentation :
 
 Développé en :
 
-- [node 20.11.1](https://nodejs.org/en/blog/release/v20.11.1)
-- [react 18.2.0](https://fr.legacy.reactjs.org/versions)
+- [nodeJS 20.11.1](https://nodejs.org/en/blog/release/v20.11.1)
+- [reactJS 18.2.0](https://fr.legacy.reactjs.org/versions)

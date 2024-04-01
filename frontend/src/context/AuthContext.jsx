@@ -1,6 +1,9 @@
 import React, { createContext, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import axios from "axios";
 import { URL } from "../constants/api.js";
+import { resetMoviesSlice } from "../redux/movies.reducer.js";
+import { resetUsersSlice } from "../redux/users.reducer.js";
 
 export const AuthContext = createContext();
 
@@ -8,6 +11,7 @@ export const AuthProvider = ({ children }) => {
   // Etat pour suivre si l'uathentification est en cours
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     isLoggedIn();
@@ -31,7 +35,12 @@ export const AuthProvider = ({ children }) => {
         return true;
       }
     } catch (err) {
-      if (err.response.status === 404 || err.response.status === 400)
+      console.log(err);
+      if (
+        err.response.status === 404 ||
+        err.response.status === 400 ||
+        err.response.status === 401
+      )
         console.log(err.response.data.message);
       // Mail ou mot de passe incorrecte
       else console.log(err);
@@ -40,15 +49,22 @@ export const AuthProvider = ({ children }) => {
   };
 
   /**
-   * Cette fonction déconnecte  l'utilisateur et supprime le cookie de session
+   * Cette fonction déconnecte l'utilisateur :
+   *    - Supprime le cookie de session
+   *    - Réintialise le store redux
    * @return {void}
    */
   const logout = async () => {
     try {
-      const { data } = await axios.delete(URL.USER_LOGOUT, {
+      // Supprime la session
+      await axios.delete(URL.USER_LOGOUT, {
         withCredentials: true,
       });
       setUser(null);
+
+      // Reinitialise le store
+      dispatch(resetMoviesSlice());
+      dispatch(resetUsersSlice());
     } catch (err) {
       console.log(err);
     }
@@ -63,7 +79,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (dataForm) => {
     setIsLoading(true);
     try {
-      const { data, status } = await axios.post(URL.USER_SIGNUP, dataForm, {
+      const { status } = await axios.post(URL.USER_SIGNUP, dataForm, {
         withCredentials: true,
       });
       if (status === 201) {
@@ -72,6 +88,10 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (err) {
       console.log(err);
+      if (err.response.status === 400)
+        console.log(err.response.data.message); // Le middleware a échoué
+      else console.log(err);
+      setIsLoading(false);
     }
   };
 
@@ -98,6 +118,79 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // MOVIES
+
+  /**
+   * Cette fonction récupère les films en appliquant filtrant 50 articles à la fois, comme la pagination souhaitée en front
+   * Si status 200 : Retourne unobjet contenant les données
+   * Sinon, aucune donnée retournée
+   */
+  const getHomeMovies = async (pageFirstMovie, pageLastMovie, currentPage) => {
+    try {
+      const { data, status } = await axios.get(URL.GET_HOME_MOVIES, {
+        params: {
+          pageFirstMovie: pageFirstMovie,
+          pageLastMovie: pageLastMovie,
+          currentPage: currentPage,
+        },
+        withCredentials: true,
+      });
+
+      if (status === 200) {
+        return data;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  /**
+   * Cette fonction récupère toutes les préférences de films associées à un utilisateur.
+   * Si status 200 : Retourne unobjet contenant les données
+   * Sinon, aucune donnée retournée
+   */
+  const getMoviesPreferences = async (preferencesString) => {
+    try {
+      const { data, status } = await axios.get(URL.GET_MOVIES_PREFERENCES, {
+        params: {
+          userId: user.id,
+          preferencesString: preferencesString,
+        },
+        withCredentials: true,
+      });
+
+      if (status === 200) {
+        return data;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  /**
+   * Cette fonction toggle les préférences de films d'un utilisateur
+   * Si status 200/201 : Retourne unobjet contenant les données
+   * Sinon, aucune donnée retournée
+   */
+  const patchMoviePreference = async (movie, preferenceKey) => {
+    try {
+      const { data, status } = await axios.patch(URL.PATCH_MOVIES_PREFERENCES, {
+        params: {
+          userId: user.id,
+          movie: movie,
+          preferenceKey: preferenceKey,
+        },
+        withCredentials: true,
+      });
+
+      if (status === 201 || status === 200) {
+        return data;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -107,6 +200,9 @@ export const AuthProvider = ({ children }) => {
         logout,
         isLoggedIn,
         register,
+        getHomeMovies,
+        getMoviesPreferences,
+        patchMoviePreference,
       }}
     >
       {children}

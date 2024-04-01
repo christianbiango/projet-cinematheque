@@ -1,15 +1,15 @@
 import movieSchema from "../models/movie.model.js";
 import bcrypt from "bcrypt";
 import { env } from "../config/index.js";
-import getMovieModel from "../models/movie.model.js";
 
 // Utils
 import {
   retrieveExcelMovies,
   formatExcelMovies,
-  countDBMovies,
   createMoviesBulkUpdateArray,
+  countDBMovies,
 } from "../utils/movie.utils.js";
+import getMovieModel from "../models/movie.model.js";
 
 /**
  * Cette fonction  permet de récupérer la liste des films du fichier excel et les enregistrer dans la base de données
@@ -24,10 +24,10 @@ export const saveMoviesToDB = async () => {
     console.log("Les films ont été mis au bon format Mongo");
 
     // Sauvegarder tous les films si la bdd est vide, sinon mettre à jour
-    const moviesCount = await countDBMovies();
+    const totalMovies = await countDBMovies();
     const Movie = await getMovieModel();
 
-    if (moviesCount > 0) {
+    if (totalMovies > 0) {
       const bulkData = createMoviesBulkUpdateArray(formattedMovies);
 
       await Movie.bulkWrite(bulkData);
@@ -37,6 +37,31 @@ export const saveMoviesToDB = async () => {
       await Movie.insertMany(formattedMovies);
       console.log("Importation des films avec succès dans la base de données.");
     }
+  } catch (err) {
+    throw err;
+  }
+};
+
+/**
+ * Cette fonction récupère les films en appliquant filtrant 50 articles à la fois, comme la pagination souhaitée en front
+ * @returns {Object} - Renvoit un status 200 en cas de réussite
+ */
+export const getHomeMovies = async (req, res) => {
+  try {
+    const { totalMovies, Movie } = res.locals;
+
+    const { pageFirstMovie, pageLastMovie, currentPage } = req.query;
+
+    const movies = await Movie.find({
+      id: { $gte: pageFirstMovie, $lt: pageLastMovie },
+    });
+    res.status(200).json({
+      data: {
+        movies: movies,
+        totalMovies: totalMovies,
+        currentPage: currentPage,
+      },
+    });
   } catch (err) {
     throw err;
   }

@@ -41,29 +41,40 @@ export const signup = async (req, res) => {
  */
 export const login = async (req, res) => {
   try {
+    /*
+    if (req.session?.loginTries && req.session?.loginTries >= 2)
+      return res.status(401).json({
+        message: `Trop de tentatives de connexion échouées (${req.session.loginTries}). Veuillez réessayer ultérieurement.`,
+      });
+      */
+
     const wrongCredentials = "Le mail ou le mot de passe sont incorrectes.";
     const userModel = await getUserModel();
 
     const user = await userModel.findOne({ email: req.body.email });
 
     //  si l'user n'est pas trouvé, renvoit une erreur 404.
-    if (!user) return res.status(404).json({ message: wrongCredentials });
+    if (!user) {
+      req.session.loginTries++;
+      return res.status(404).json({ message: wrongCredentials });
+    }
     // compare le mot de passe fourni dans la requete
 
     const comparePassword = await bcrypt.compare(
       req.body.password,
       user.password
     );
-    if (!comparePassword)
+    if (!comparePassword) {
+      req.session.loginTries++;
+      console.log(req.session.loginTries);
       return res.status(400).json({ message: wrongCredentials });
+    }
 
     // Création de la session
     req.session.userId = user._id;
     req.session.username = user.username;
     // Sauvegarder la session
     await req.session.save();
-    console.log("login", req.session);
-    console.log(req.sessionID);
     res.status(200).json({
       message: "Connexion réussie !",
       user: { id: user._id, username: user.username },
@@ -129,5 +140,91 @@ export const checkSession = async (req, res) => {
     }
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+// FILMS
+
+/**
+ * Cette fonction récupère toutes les préférences  de films associées à un utilisateur.
+ * @returns {Object} - Status 200 si la requête a réussi
+ */
+export const getMoviesPreferences = async (req, res) => {
+  try {
+    // TODO: peut-etre ajouter getUserModel à un middleware pour pouvori le récup dans chaque callback
+    const userModel = await getUserModel();
+
+    const { userId, preferencesString } = req.query;
+
+    const moviesPreferences = await userModel.findById(
+      { _id: userId },
+      preferencesString
+    );
+
+    return res.status(200).json(moviesPreferences);
+  } catch (err) {
+    console.log(err.message);
+  }
+};
+
+/**
+ * Cette fonction toggle les préférences de films d'un utilisateur
+ * @returns {Object} - Status 201 : nouvelle préférence ajoutée / Status 200 : préférence supprimée
+ */
+export const patchMoviePreference = async (req, res) => {
+  try {
+    const userModel = await getUserModel();
+    const { Movie } = res.locals;
+
+    const { userId, movie, preferenceKey } = req.body.params;
+
+    // 1. Récuperer l'utilisateur
+    const mongoUser = await userModel.findById({ _id: userId });
+
+    const isInPreference = mongoUser[preferenceKey].some(
+      (preferenceMovie) => movie.id === preferenceMovie.id
+    );
+
+    /*
+    const bulkOperations = [];
+    if (isInPreference) {
+      bulkOperations.push({
+        updateOne: {
+          filter: { _id: userId },
+          update: { $pull: { preferenceKey: { id: movie.id } } },
+        },
+      });
+    } else {
+      bulkOperations.push({
+        updateOne: {
+          filter: { _id: userId },
+          update: { $addToSet: { preferenceKey: movie } }, // Ajoute directement l'objet movie à l'array
+        },
+      });
+    }
+    */
+
+    // 2. Vérifier si la préférence demandée sur le frontend est déjà présente.
+    // Si oui : supprimer
+    // Si non : ajouter
+    isInPreference;
+    if (isInPreference) {
+      await userModel.findByIdAndUpdate(userId, {
+        $pull: { [preferenceKey]: { id: movie.id } },
+      });
+    } else {
+      await userModel.findByIdAndUpdate(userId, {
+        $addToSet: { [preferenceKey]: movie }, // $addToSet ajoute  l'objet seulement s'il n'est pas présent dans l'array
+      });
+    }
+
+    // 3. Récupérer la préférence mise à jour
+    const patchedKey = await userModel.findById({ _id: userId }, preferenceKey);
+
+    return res
+      .status(isInPreference ? 200 : 201)
+      .json(patchedKey[preferenceKey]);
+  } catch (err) {
+    throw err;
   }
 };

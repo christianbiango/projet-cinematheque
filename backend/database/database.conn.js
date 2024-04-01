@@ -12,7 +12,7 @@ export const connectDatabases = async () => {
     const dbNames = [env.mongoMoviesDBName, env.mongoUsersDBName];
     const [movieDBName, userDBName] = dbNames;
     if (!movieDB || !userDB) {
-      // bases de données
+      // 1. Promesses de connexion aux bases de données
       const movieDBPromise = await mongoose
         .createConnection(env.mongoURI, {
           dbName: movieDBName,
@@ -24,6 +24,7 @@ export const connectDatabases = async () => {
         })
         .asPromise();
 
+      // 2. Consommer les promesses
       [movieDB, userDB] = await Promise.all([movieDBPromise, userDBPromise]);
 
       console.log("Connexion à mongoDB réussie !");
