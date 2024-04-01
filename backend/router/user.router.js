@@ -6,6 +6,8 @@ import {
   login,
   checkSession,
   logout,
+  getMoviesPreferences,
+  patchMoviePreference,
 } from "../controllers/user.controller.js";
 
 import { getHomeMovies } from "../controllers/movie.controller.js";
@@ -25,5 +27,16 @@ router.delete("/logout", logout);
 
 // FILMS
 router.get("/movies", prepareMoviesOperationsMiddleware, getHomeMovies);
+router.get(
+  "/movies-preferences",
+  prepareMoviesOperationsMiddleware,
+  getMoviesPreferences
+);
+
+router.patch(
+  "/patch/movie-preference",
+  prepareMoviesOperationsMiddleware,
+  patchMoviePreference
+);
 
 export default router;

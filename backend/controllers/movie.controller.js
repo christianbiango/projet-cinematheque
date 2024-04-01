@@ -44,18 +44,13 @@ export const saveMoviesToDB = async () => {
 
 /**
  * Cette fonction récupère les films en appliquant filtrant 50 articles à la fois, comme la pagination souhaitée en front
- * @param {Object} req
- * @param {Object} res
- * @returns {void} - Renvoit un status 200 en cas de réussite
+ * @returns {Object} - Renvoit un status 200 en cas de réussite
  */
 export const getHomeMovies = async (req, res) => {
   try {
-    const totalMovies = res.locals.totalMovies;
-    const Movie = res.locals.Movie;
+    const { totalMovies, Movie } = res.locals;
 
-    const pageFirstMovie = req.query.pageFirstMovie;
-    const pageLastMovie = req.query.pageLastMovie;
-    const currentPage = req.query.currentPage;
+    const { pageFirstMovie, pageLastMovie, currentPage } = req.query;
 
     const movies = await Movie.find({
       id: { $gte: pageFirstMovie, $lt: pageLastMovie },

@@ -2,11 +2,17 @@ import mongoose from "mongoose";
 import mongooseUniqueValidator from "mongoose-unique-validator";
 import { connectDatabases } from "../database/database.conn.js";
 import { env } from "../config/index.js";
+import getMovieModel from "./movie.model.js";
 
 const { Schema, Types } = mongoose;
 
+/**
+ * Cette fonction créer l'UserModel. Le modèle effectue des références vers la collection "movies" de la base de données correspondante
+ * @returns {Model} - L'Objet UserModel
+ */
 const getUserModel = async () => {
   try {
+    const Movie = await getMovieModel();
     const modelName = env.mongoUsersCollectionName;
     const moviesDBName = env.mongoMoviesDBName;
 
@@ -25,17 +31,12 @@ const getUserModel = async () => {
             postal: { type: Number, require: false },
             country: { type: String, require: false },
           },
-          filmList: [
-            { type: Schema.Types.ObjectId, ref: `${moviesDBName}.movies` },
-          ],
+          seenMovies: [{ type: Movie.schema, ref: `${moviesDBName}.movies` }],
           favouriteMovies: [
-            { type: Schema.Types.ObjectId, ref: `${moviesDBName}.movies` },
-          ],
-          likedMovies: [
-            { type: Schema.Types.ObjectId, ref: `${moviesDBName}.movies` },
+            { type: Movie.schema, ref: `${moviesDBName}.movies` },
           ],
           seeLaterMovies: [
-            { type: Schema.Types.ObjectId, ref: `${moviesDBName}.movies` },
+            { type: Movie.schema, ref: `${moviesDBName}.movies` },
           ],
         },
         { timestamps: { createdAt: true } }

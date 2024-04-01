@@ -13,8 +13,10 @@ export default async function prepareMoviesOperationsMiddleware(
   const totalMovies = await countDBMovies();
   const Movie = await getMovieModel();
 
+  // Locals sera réutilisable dans les fonctions next()
   res.locals.totalMovies = totalMovies;
   res.locals.Movie = Movie;
+  res.locals.movieSchema = Movie.schema;
 
   next();
 }

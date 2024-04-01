@@ -1,5 +1,10 @@
 import validator from "validator";
 
+/**
+ * Ce middleware effectue la vérification des champs entrés dans les formulaires de connexion et d'inscription.
+ * Ne retourne aucune donnée : formulaire valide
+ * Status 400 :  erreur(s) dans le formulaire
+ */
 export default function loginMiddleware(req, res, next) {
   const { email, password } = req.body;
 

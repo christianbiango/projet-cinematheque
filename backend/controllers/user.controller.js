@@ -142,3 +142,89 @@ export const checkSession = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+// FILMS
+
+/**
+ * Cette fonction récupère toutes les préférences  de films associées à un utilisateur.
+ * @returns {Object} - Status 200 si la requête a réussi
+ */
+export const getMoviesPreferences = async (req, res) => {
+  try {
+    // TODO: peut-etre ajouter getUserModel à un middleware pour pouvori le récup dans chaque callback
+    const userModel = await getUserModel();
+
+    const { userId, preferencesString } = req.query;
+
+    const moviesPreferences = await userModel.findById(
+      { _id: userId },
+      preferencesString
+    );
+
+    return res.status(200).json(moviesPreferences);
+  } catch (err) {
+    console.log(err.message);
+  }
+};
+
+/**
+ * Cette fonction toggle les préférences de films d'un utilisateur
+ * @returns {Object} - Status 201 : nouvelle préférence ajoutée / Status 200 : préférence supprimée
+ */
+export const patchMoviePreference = async (req, res) => {
+  try {
+    const userModel = await getUserModel();
+    const { Movie } = res.locals;
+
+    const { userId, movie, preferenceKey } = req.body.params;
+
+    // 1. Récuperer l'utilisateur
+    const mongoUser = await userModel.findById({ _id: userId });
+
+    const isInPreference = mongoUser[preferenceKey].some(
+      (preferenceMovie) => movie.id === preferenceMovie.id
+    );
+
+    /*
+    const bulkOperations = [];
+    if (isInPreference) {
+      bulkOperations.push({
+        updateOne: {
+          filter: { _id: userId },
+          update: { $pull: { preferenceKey: { id: movie.id } } },
+        },
+      });
+    } else {
+      bulkOperations.push({
+        updateOne: {
+          filter: { _id: userId },
+          update: { $addToSet: { preferenceKey: movie } }, // Ajoute directement l'objet movie à l'array
+        },
+      });
+    }
+    */
+
+    // 2. Vérifier si la préférence demandée sur le frontend est déjà présente.
+    // Si oui : supprimer
+    // Si non : ajouter
+    isInPreference;
+    if (isInPreference) {
+      await userModel.findByIdAndUpdate(userId, {
+        $pull: { [preferenceKey]: { id: movie.id } },
+      });
+    } else {
+      await userModel.findByIdAndUpdate(userId, {
+        $addToSet: { [preferenceKey]: movie }, // $addToSet ajoute  l'objet seulement s'il n'est pas présent dans l'array
+      });
+    }
+
+    // 3. Récupérer la préférence mise à jour
+    const patchedKey = await userModel.findById({ _id: userId }, preferenceKey);
+
+    return res
+      .status(isInPreference ? 200 : 201)
+      .json(patchedKey[preferenceKey]);
+  } catch (err) {
+    throw err;
+  }
+};

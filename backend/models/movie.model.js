@@ -7,7 +7,11 @@ const { Schema } = mongoose;
 
 /**
  * Cette fonction permet de définir le modèle d'un utilisateur (User) ou le récupérer s'il existe déjà
- * @returns {Object} Movie - Model représentant les films dans la base de données
+ * @returns {Object} Objet contenant le schema et le model.
+ *    Movie :
+ *    - Model représentant les films dans la base de données
+ *    Schema :
+ *    - Schema du modèle
  */
 const getMovieModel = async () => {
   try {
