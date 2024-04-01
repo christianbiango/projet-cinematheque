@@ -97,6 +97,7 @@ export const createMoviesBulkUpdateArray = (formattedMovies) => {
         id: movie.id,
       },
       update: movie,
+      upsert: true, // Si  l'objet n'existe pas, il est créé.
     },
   }));
   return bulkData;

@@ -35,7 +35,6 @@ const FavouriteMovies = ({ props }) => {
           pageLastMovie: pageLastMovie,
           currentPage: currentPage,
         });
-        console.log(moviesPreference);
 
         dispatch(USER_ACTION.sendMoviesPreferences(moviesPreferences));
 
