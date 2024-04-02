@@ -21,10 +21,11 @@ export const moviesSlice = createSlice({
      * Cette méthode envoit les films récupérés en base de données dans le store. Déclenchée à chaque chargement de page
      */
     sendMovies: (draft, action) => {
-      const { movies, totalMovies, currentPage } = action.payload;
+      const { movies, totalMovies, currentPage, images } = action.payload;
 
       draft.loading = false;
       draft.data = movies;
+      draft.images = images;
       draft.totalMovies = totalMovies;
       draft.currentPage =
         typeof currentPage === "number" ? currentPage : +currentPage;

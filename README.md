@@ -30,7 +30,7 @@ Voici quelques types de variables d'environnement retrouvables dans le fichier [
 
 Elles seront installées automatiquement en exécutant la commande `npm i` dans votre terminal. Vous devrez être placé dans le dossier backend du projet, puis recommencer pour installer les dépendances du dossier frontend.
 
-En effet, les dépendances sont listées ici à des fins de documentation :
+En effet, les dépendances sont listées ici (non exhaustif) à des fins de documentation :
 
 | <center>NodeJS</center>         | <center>ReactJS</center> |
 | ------------------------------- | ------------------------ |
