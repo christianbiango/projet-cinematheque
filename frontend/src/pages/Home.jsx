@@ -8,8 +8,13 @@ import * as USER_ACTION from "../redux/users.reducer.js"; // Nécessite un impor
 const Home = () => {
   const store = useSelector((state) => state);
   const dispatch = useDispatch();
-  const { getHomeMovies, getMoviesPreferences, user, patchMoviePreference } =
-    useContext(AuthContext);
+  const {
+    getHomeMovies,
+    getMoviesPreferences,
+    user,
+    patchMoviePreference,
+    getTMDBMovie,
+  } = useContext(AuthContext);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -30,6 +35,23 @@ const Home = () => {
           pageLastMovie,
           currentPage
         );
+
+        /*
+        const moviesImages = homeMovies.data.movies.map((movie) =>
+          getTMDBMovie(movie.titre)
+        );
+        console.log("resultat", moviesImages);
+        setMoviesImages(moviesImages);
+        */
+
+        const apiImages = homeMovies.data.movies.map(async (movie) => {
+          return {
+            titre: movie.titre,
+            url: await movieImage(movie.titre, movie.anneeProduction),
+          };
+        });
+
+        homeMovies.data.images = await Promise.all(apiImages);
         dispatch(USER_ACTION.sendMoviesPreferences(moviesPreferences));
         dispatch(sendMovies(homeMovies.data));
       } catch (err) {
@@ -40,6 +62,11 @@ const Home = () => {
     };
     fetchMovies();
   }, [currentPage, moviesPerPage, dispatch]);
+
+  const movieImage = async (title, year) => {
+    const movieImg = await getTMDBMovie(title, year);
+    return movieImg || undefined;
+  };
 
   const toggleLike = async (movie) => {
     const patchKeyName = "favouriteMovies";
@@ -73,6 +100,18 @@ const Home = () => {
               <div key={index}>
                 {/* Conteneur du film */}
                 <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+                  {/* Image du film par TMDB */}
+                  <img
+                    height={600}
+                    width={600}
+                    src={
+                      store.movies.images.filter(
+                        (image) => image.titre === movie.titre
+                      )[0].url || "/unknown-image.png"
+                    }
+                  ></img>
+
+                  {/* Reste du film*/}
                   <h2 className="text-xl font-bold mb-2">{movie.titre}</h2>
                   {movie?.genre ? (
                     <p className="text-sm text-gray-700">{movie.genre}</p>
@@ -95,8 +134,8 @@ const Home = () => {
                           store.users.favouriteMovies.some(
                             (favouriteMovie) => movie.id === favouriteMovie.id
                           )
-                            ? "/public/heart-solid.svg"
-                            : "/public/heart-regular.svg"
+                            ? "/heart-solid.svg"
+                            : "/heart-regular.svg"
                         }
                         alt="Like"
                         height={20}
@@ -110,8 +149,8 @@ const Home = () => {
                           store.users.seenMovies.some(
                             (seenMovie) => movie.id === seenMovie.id
                           )
-                            ? "/public/toggle-on-solid.svg"
-                            : "/public/toggle-off-solid.svg"
+                            ? "/toggle-on-solid.svg"
+                            : "/toggle-off-solid.svg"
                         }
                         alt="Vu"
                         height={20}

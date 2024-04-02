@@ -1,5 +1,6 @@
 import getUserModel from "../models/user.model.js";
 import bcrypt from "bcrypt";
+import sanitize from "sanitize-html";
 
 /**
  * Cette fonction inscrit un novuel utilisateur

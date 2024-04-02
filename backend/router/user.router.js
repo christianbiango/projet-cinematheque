@@ -11,7 +11,10 @@ import {
   patchMoviePreference,
 } from "../controllers/user.controller.js";
 
-import { getHomeMovies } from "../controllers/movie.controller.js";
+import {
+  getHomeMovies,
+  fetchTMDBAPI,
+} from "../controllers/movie.controller.js";
 
 // MIDDLEWARES
 import loginMiddleware from "../middleware/LoginMiddleware.js";
@@ -41,5 +44,7 @@ router.patch(
   prepareMoviesOperationsMiddleware,
   patchMoviePreference
 );
+
+router.get("/tmdb-movie", fetchTMDBAPI);
 
 export default router;

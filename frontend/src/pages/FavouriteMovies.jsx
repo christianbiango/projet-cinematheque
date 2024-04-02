@@ -13,6 +13,7 @@ const FavouriteMovies = ({ props }) => {
     getMoviePreference,
     user,
     patchMoviePreference,
+    getTMDBMovie,
   } = useContext(AuthContext);
 
   // Pagination
@@ -35,7 +36,15 @@ const FavouriteMovies = ({ props }) => {
           pageLastMovie: pageLastMovie,
           currentPage: currentPage,
         });
+        console.log(moviesPreference);
+        const apiImages = moviesPreference.movies.map(async (movie) => {
+          return {
+            titre: movie.titre,
+            url: await movieImage(movie.titre, movie.anneeProduction),
+          };
+        });
 
+        moviesPreference.images = await Promise.all(apiImages);
         dispatch(USER_ACTION.sendMoviesPreferences(moviesPreferences));
 
         dispatch(sendMovies(moviesPreference));
@@ -47,6 +56,11 @@ const FavouriteMovies = ({ props }) => {
     };
     fetchMovies();
   }, [currentPage, moviesPerPage, dispatch]);
+
+  const movieImage = async (title, year) => {
+    const movieImg = await getTMDBMovie(title, year);
+    return movieImg || undefined;
+  };
 
   const toggleLike = async (movie) => {
     const patchKeyName = "favouriteMovies";
@@ -80,6 +94,18 @@ const FavouriteMovies = ({ props }) => {
               <div key={index}>
                 {/* Conteneur du film */}
                 <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+                  {/* Image du film par TMDB */}
+                  <img
+                    height={600}
+                    width={600}
+                    src={
+                      store.movies.images.filter(
+                        (image) => image.titre === movie.titre
+                      )[0].url || "/unknown-image.png"
+                    }
+                  ></img>
+
+                  {/* Reste du film*/}
                   <h2 className="text-xl font-bold mb-2">{movie.titre}</h2>
                   {movie?.genre ? (
                     <p className="text-sm text-gray-700">{movie.genre}</p>
@@ -102,8 +128,8 @@ const FavouriteMovies = ({ props }) => {
                           store.users.favouriteMovies.some(
                             (favouriteMovie) => movie.id === favouriteMovie.id
                           )
-                            ? "/public/heart-solid.svg"
-                            : "/public/heart-regular.svg"
+                            ? "/heart-solid.svg"
+                            : "/heart-regular.svg"
                         }
                         alt="Like"
                         height={20}
@@ -117,8 +143,8 @@ const FavouriteMovies = ({ props }) => {
                           store.users.seenMovies.some(
                             (seenMovie) => movie.id === seenMovie.id
                           )
-                            ? "/public/toggle-on-solid.svg"
-                            : "/public/toggle-off-solid.svg"
+                            ? "/toggle-on-solid.svg"
+                            : "/toggle-off-solid.svg"
                         }
                         alt="Vu"
                         height={20}

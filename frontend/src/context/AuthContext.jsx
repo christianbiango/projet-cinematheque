@@ -220,6 +220,25 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const getTMDBMovie = async (movieTitle, movieYear) => {
+    try {
+      console.log(movieTitle);
+      const { data, status } = await axios.get(URL.GET_TMDB_MOVIE, {
+        params: {
+          title: movieTitle,
+          year: movieYear,
+        },
+        widthCredentials: true,
+      });
+
+      if (status === 200) {
+        return data;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -233,6 +252,7 @@ export const AuthProvider = ({ children }) => {
         getMoviesPreferences,
         patchMoviePreference,
         getMoviePreference,
+        getTMDBMovie,
       }}
     >
       {children}

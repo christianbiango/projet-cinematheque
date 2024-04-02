@@ -1,6 +1,6 @@
 import movieSchema from "../models/movie.model.js";
 import bcrypt from "bcrypt";
-import { env } from "../config/index.js";
+import { env, TMDB } from "../config/index.js";
 
 // Utils
 import {
@@ -9,6 +9,7 @@ import {
   createMoviesBulkUpdateArray,
   countDBMovies,
 } from "../utils/movie.utils.js";
+import { MovieAPI } from "../services/movie.service.js";
 import getMovieModel from "../models/movie.model.js";
 import getUserModel from "../models/user.model.js";
 
@@ -162,6 +163,23 @@ export const getHomeMovies = async (req, res) => {
         currentPage: currentPage,
       },
     });
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const fetchTMDBAPI = async (req, res) => {
+  try {
+    const { title, year } = req.query;
+
+    const movies = await MovieAPI.fetchByTitle(title, year);
+    let imageUrl = movies[0]?.backdrop_path;
+
+    if (imageUrl === null) imageUrl = undefined;
+
+    if (imageUrl !== undefined) imageUrl = TMDB.BACKDROP_BASE_URL + imageUrl; // ?. Renvoit undefined si le clé est indéfinie
+
+    res.status(200).json(imageUrl);
   } catch (err) {
     throw err;
   }

@@ -8,4 +8,5 @@ export const URL = {
   GET_MOVIE_PREFERENCE: "http://localhost:9000/api/user/movie-preference",
   PATCH_MOVIES_PREFERENCES:
     "http://localhost:9000/api/user/patch/movie-preference",
+  GET_TMDB_MOVIE: "http://localhost:9000/api/user/tmdb-movie",
 };

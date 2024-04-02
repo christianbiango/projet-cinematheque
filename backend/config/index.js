@@ -17,3 +17,10 @@ export const env = {
   defaultFirstPage: process.env.DEFAULT_FIRST_PAGE,
   moviesPerPage: process.env.MOVIES_PER_PAGE,
 };
+
+export const TMDB = {
+  API_KEY: process.env.TMDB_API_KEY,
+  BASE_URL: process.env.TMDB_BASE_URL,
+  BACKDROP_BASE_URL: process.env.TMDB_BACKDROP_BASE_URL, // L'url avant les image car dans la réponse pour les img on a que la fin
+  SMALL_IMG_COVER_BASE_URL: process.env.TMDB_SMALL_IMG_COVER_BASE_URL,
+};
