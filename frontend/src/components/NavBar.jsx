@@ -1,6 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
+/**
+ * Navbar affichée sur toutes les routes privées de l'App
+ *  */
 const NavBar = () => {
   return (
     <header className="bg-gray-800 text-white fixed top-0 left-0 w-full z-50">

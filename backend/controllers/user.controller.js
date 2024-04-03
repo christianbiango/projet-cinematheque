@@ -2,6 +2,8 @@ import getUserModel from "../models/user.model.js";
 import bcrypt from "bcrypt";
 import sanitize from "sanitize-html";
 
+import { MovieAPI } from "../services/movie.service.js";
+
 /**
  * Cette fonction inscrit un novuel utilisateur
  * @param {Object} req - Request Object
@@ -245,6 +247,21 @@ export const patchMoviePreference = async (req, res) => {
     return res
       .status(isInPreference ? 200 : 201)
       .json(patchedKey[preferenceKey]);
+  } catch (err) {
+    throw err;
+  }
+};
+
+/**
+ * Cette fonction  permet de récupérer les événements proches de la localisation de l'utilisateur.
+ * @returns {Array} (200) - Contient les films fetchés, sinon vide
+ */
+export const getMoviesNearUser = async (req, res) => {
+  try {
+    const { lat, lng } = req.query;
+    const festivals = await MovieAPI.fetchLocatedFestivals(lat, lng);
+
+    return res.status(200).json(festivals); // Array vide si aucun festival trouvé
   } catch (err) {
     throw err;
   }

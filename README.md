@@ -36,17 +36,18 @@ En effet, les dépendances sont listées ici (non exhaustif) à des fins de docu
 | ------------------------------- | ------------------------ |
 | bcrypt 5.1.1                    | tailwindcss 3.4.3        |
 | connect-mongo: 5.1.0            | react 18.2.0             |
-| cors 2.8.5                      | axios 1.6.8              |
+| axios 1.6.8                     | axios 1.6.8              |
 | express-session 1.18.0          | react-dom 18.2.0         |
 | validator 13.11.0               | react-redux 9.1.0        |
 | dotenv 16.4.5                   | react-router-dom 6.22.3  |
 | express 4.19.2                  | @reduxjs/toolkit 2.2.2   |
-| mongoose 8.2.4                  |
-| mongoose-unique-validator 5.0.0 |
+| mongoose 8.2.4                  | leaflet 1.9.4            |
+| mongoose-unique-validator 5.0.0 | react-leaflet 4.2.1      |
 | nodemon 3.1.0                   |
 | serialize 0.1.3                 |
 | xlsx 0.18.5                     |
 | fs 0.0.1-security               |
+| cors 2.8.5                      |
 
 ## Questions ou Problèmes
 

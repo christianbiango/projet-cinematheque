@@ -24,3 +24,9 @@ export const TMDB = {
   BACKDROP_BASE_URL: process.env.TMDB_BACKDROP_BASE_URL, // L'url avant les image car dans la réponse pour les img on a que la fin
   SMALL_IMG_COVER_BASE_URL: process.env.TMDB_SMALL_IMG_COVER_BASE_URL,
 };
+
+export const DATA_CULTURE_GOUV = {
+  BASE_URL: process.env.DATA_CULTURE_GOUV_BASE_URL,
+  MAX_KM_DISTANCE: process.env.MAX_KM_DISTANCE,
+  FETCH_FESTIVAL_LIMIT: process.env.FETCH_FESTIVAL_LIMIT,
+};

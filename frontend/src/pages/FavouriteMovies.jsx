@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { fetchFailure, sendMovies } from "../redux/movies.reducer.js";
 import * as USER_ACTION from "../redux/users.reducer.js"; // Nécessite un import contrairement à movies.reducer
+import SuggestionsMap from "../components/SuggestionsMap.jsx";
 
 const FavouriteMovies = ({ props }) => {
   const store = useSelector((state) => state);
@@ -87,6 +88,7 @@ const FavouriteMovies = ({ props }) => {
         <br />
         {user.username.toUpperCase()}
       </h1>
+      <SuggestionsMap />
       <div className="movie-container">
         {store ? (
           store.movies.data.map((movie, index) => {

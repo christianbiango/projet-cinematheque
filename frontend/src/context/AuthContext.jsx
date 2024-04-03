@@ -220,15 +220,44 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  /**
+   * Cette fonction lance un appel au serveur pour effectuer un appel API vers TMDB
+   * @param {String} movieTitle
+   * @param {Integer} movieYear
+   * @returns {String} -  Lien vers la page du film sur TMDB
+   */
   const getTMDBMovie = async (movieTitle, movieYear) => {
     try {
-      console.log(movieTitle);
       const { data, status } = await axios.get(URL.GET_TMDB_MOVIE, {
         params: {
           title: movieTitle,
           year: movieYear,
         },
-        widthCredentials: true,
+        withCredentials: true,
+      });
+
+      if (status === 200) {
+        return data;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  /**
+   * Cette fonction lance un appel au serveur pour effectuer une requête vers l'API des films proches de l'utilisateur
+   * @param {Integer} lat
+   * @param {Integer} lng
+   * @returns {Array} - Objets d'événements listés du plus proche au plus loin géographiquement
+   */
+  const getMoviesNearUser = async (lat, lng) => {
+    try {
+      const { data, status } = await axios.get(URL.GET_NEAR_USER_MOVIES, {
+        params: {
+          lat: lat,
+          lng: lng,
+        },
+        withCredentials: true,
       });
 
       if (status === 200) {
@@ -253,6 +282,7 @@ export const AuthProvider = ({ children }) => {
         patchMoviePreference,
         getMoviePreference,
         getTMDBMovie,
+        getMoviesNearUser,
       }}
     >
       {children}

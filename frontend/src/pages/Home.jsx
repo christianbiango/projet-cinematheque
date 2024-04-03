@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { fetchFailure, sendMovies } from "../redux/movies.reducer.js";
 import * as USER_ACTION from "../redux/users.reducer.js"; // Nécessite un import contrairement à movies.reducer
+import SuggestionsMap from "../components/SuggestionsMap.jsx";
 
 const Home = () => {
   const store = useSelector((state) => state);
@@ -35,14 +36,6 @@ const Home = () => {
           pageLastMovie,
           currentPage
         );
-
-        /*
-        const moviesImages = homeMovies.data.movies.map((movie) =>
-          getTMDBMovie(movie.titre)
-        );
-        console.log("resultat", moviesImages);
-        setMoviesImages(moviesImages);
-        */
 
         const apiImages = homeMovies.data.movies.map(async (movie) => {
           return {
@@ -93,6 +86,9 @@ const Home = () => {
         <br />
         {user.username.toUpperCase()}
       </h1>
+
+      <SuggestionsMap />
+
       <div className="movie-container">
         {store.movies.data ? (
           store.movies.data.map((movie, index) => {

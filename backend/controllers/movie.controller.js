@@ -167,17 +167,20 @@ export const getHomeMovies = async (req, res) => {
     throw err;
   }
 };
-
+/**
+ * Cette fonction récupère cherche l'image du film passé en paramètre dans l'API TMDB.
+ * @returns {String} - URL de l'image | Undefined
+ */
 export const fetchTMDBAPI = async (req, res) => {
   try {
     const { title, year } = req.query;
 
     const movies = await MovieAPI.fetchByTitle(title, year);
-    let imageUrl = movies[0]?.backdrop_path;
+    let imageUrl = movies[0]?.backdrop_path; // ?. Renvoit undefined si le clé est indéfinie
 
     if (imageUrl === null) imageUrl = undefined;
 
-    if (imageUrl !== undefined) imageUrl = TMDB.BACKDROP_BASE_URL + imageUrl; // ?. Renvoit undefined si le clé est indéfinie
+    if (imageUrl !== undefined) imageUrl = TMDB.BACKDROP_BASE_URL + imageUrl;
 
     res.status(200).json(imageUrl);
   } catch (err) {

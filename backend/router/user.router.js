@@ -9,6 +9,7 @@ import {
   getMoviesPreferences,
   getMoviePreference,
   patchMoviePreference,
+  getMoviesNearUser,
 } from "../controllers/user.controller.js";
 
 import {
@@ -36,15 +37,15 @@ router.get(
   prepareMoviesOperationsMiddleware,
   getMoviesPreferences
 );
-
 router.get("/movie-preference", getMoviePreference);
-
 router.patch(
   "/patch/movie-preference",
   prepareMoviesOperationsMiddleware,
   patchMoviePreference
 );
-
 router.get("/tmdb-movie", fetchTMDBAPI);
+
+// SUGGESTIONS DE FILMS
+router.get("/near-movies", getMoviesNearUser);
 
 export default router;
