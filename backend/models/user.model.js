@@ -31,7 +31,13 @@ const getUserModel = async () => {
             postal: { type: Number, require: false },
             country: { type: String, require: false },
           },
-          seenMovies: [{ type: Movie.schema, ref: `${moviesDBName}.movies` }],
+          seenMovies: [
+            {
+              unique: false,
+              type: Movie.schema,
+              ref: `${moviesDBName}.movies`,
+            },
+          ],
           favouriteMovies: [
             { type: Movie.schema, ref: `${moviesDBName}.movies` },
           ],

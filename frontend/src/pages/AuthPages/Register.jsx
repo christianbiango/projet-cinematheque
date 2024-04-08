@@ -18,7 +18,7 @@ const Register = () => {
 
   useEffect(() => {
     if (user) navigate("/");
-  }, []);
+  }, [user]);
 
   const _onChangeInput = (e) => {
     const { name, value } = e.target;

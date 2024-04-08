@@ -2,7 +2,6 @@ import React, { useEffect, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { Navigate, Outlet } from "react-router-dom";
 import NavBar from "./NavBar";
-import Logout from "./Logout";
 
 /**
  * Component parent de toutes les routes privées
@@ -16,7 +15,6 @@ const PrivateRoute = () => {
     <>
       <NavBar />
       <Outlet />
-      <Logout />
     </>
   ) : (
     <Navigate to="/login" />

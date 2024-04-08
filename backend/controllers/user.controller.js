@@ -14,15 +14,28 @@ import { MovieAPI } from "../services/movie.service.js";
  */
 export const signup = async (req, res) => {
   try {
+    // 1. Utiliser Sanitize sur les  données de l'utilisateur pour supprimer  tout ce qui n'est pas des lettres
+    const sanitizedFormData = {};
+
+    for (const field in formData) {
+      if (Object.hasOwnProperty.call(formData, field)) {
+        // hasOwnProperty  est utilisé pour vérifier si une propriété provient de l'objet en lui même et non hérité de son prototype. Cela évite de modifier de façon involontaire des objets du prototype
+        sanitizedFormData[field] = sanitize(req.body[field]);
+      }
+    }
+
+    // 2. Continuer l'inscription
     const userModel = await getUserModel();
 
-    const isUsedMail = await userModel.findOne({ email: req.body.email });
+    const isUsedMail = await userModel.findOne({
+      email: sanitizedFormData[email],
+    });
 
     if (isUsedMail) throw new Error("Un compte existe déjà avec ce mail");
 
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const hashedPassword = await bcrypt.hash(sanitizedFormData[password], 10);
     const newUser = await userModel.create({
-      ...req.body,
+      ...sanitizedFormData,
       password: hashedPassword,
     });
 
@@ -53,8 +66,9 @@ export const login = async (req, res) => {
 
     const wrongCredentials = "Le mail ou le mot de passe sont incorrectes.";
     const userModel = await getUserModel();
+    const sanitizedEmail = sanitize(req.body.email);
 
-    const user = await userModel.findOne({ email: req.body.email });
+    const user = await userModel.findOne({ email: sanitizedEmail });
 
     //  si l'user n'est pas trouvé, renvoit une erreur 404.
     if (!user) {
@@ -62,9 +76,10 @@ export const login = async (req, res) => {
       return res.status(404).json({ message: wrongCredentials });
     }
     // compare le mot de passe fourni dans la requete
+    const sanitizedPassword = sanitize(req.body.password);
 
     const comparePassword = await bcrypt.compare(
-      req.body.password,
+      sanitizedPassword,
       user.password
     );
     if (!comparePassword) {

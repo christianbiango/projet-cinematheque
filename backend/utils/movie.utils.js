@@ -85,7 +85,7 @@ export const countDBMovies = async () => {
 };
 
 /**
- *
+ * Cette fonction prépare les requêtes updates de chaque film récupéré du ficheir Excel
  * @param {Array} formattedMovies - Tableau d'objets
  * @returns {Array}
  */

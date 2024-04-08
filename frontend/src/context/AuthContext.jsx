@@ -111,7 +111,7 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(false);
     } catch (err) {
       console.log(err);
-      if (err.response.status === 401) console.log(err.response.data.message);
+      if (err.response?.status === 401) console.log(err.response.data.message);
       // Veuillez-vous connecter pour accéder à la Cinémathèqie
       else console.log(err);
       setIsLoading(false);

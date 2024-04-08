@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import Logout from "./Logout";
 
 /**
  * Navbar affichée sur toutes les routes privées de l'App
@@ -28,6 +29,9 @@ const NavBar = () => {
             <Link to="/films-a-voir" className="hover:text-gray-300">
               Films à voir
             </Link>
+          </li>
+          <li>
+            <Logout />
           </li>
         </ul>
       </nav>
