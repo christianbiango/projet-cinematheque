@@ -58,7 +58,7 @@ export const saveMoviesToDB = async () => {
       if (bulkResult && bulkResult.modifiedCount > 0) {
         // modifiedCount est renvoyé par l'opération Bulk
 
-        const userModel = await getUserModel();
+        const { userModel } = await getUserModel();
 
         // 1. Récupérer tous les utilisateurs
         const allMoviesIds = formattedMovies.map((movie) => movie.id);

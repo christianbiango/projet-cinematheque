@@ -4,6 +4,7 @@ import { env } from "./config/index.js";
 import mongoose from "mongoose";
 import MongoStore from "connect-mongo";
 import cors from "cors";
+import nodemailer from "nodemailer";
 
 // Utils
 import { saveMoviesToDB } from "./controllers/movie.controller.js";

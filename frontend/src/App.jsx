@@ -1,11 +1,12 @@
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes, useLocation, useParams } from "react-router-dom";
 import Login from "./pages/AuthPages/Login";
 import Register from "./pages/AuthPages/Register";
 import Home from "./pages/Home";
-import FavouriteMovies from "./pages/FavouriteMovies";
+import FavouriteMovies from "./pages/FavouriteMovies.jsx";
 import "./App.css";
 import PrivateRoute from "./components/PrivateRoute";
 import { useEffect, useState } from "react";
+import ConfirmRegistration from "./pages/AuthPages/ConfirmRegistration";
 
 function App() {
   const location = useLocation();
@@ -39,6 +40,10 @@ function App() {
         {/* Routes de connexion */}
         <Route path="/login" element={<Login />}></Route>
         <Route path="/register" element={<Register />}></Route>
+        <Route
+          path="/validate-email/:vtoken"
+          element={<ConfirmRegistration />}
+        ></Route>
       </Routes>
     </>
   );

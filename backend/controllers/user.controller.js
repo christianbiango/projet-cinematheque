@@ -3,18 +3,21 @@ import bcrypt from "bcrypt";
 import sanitize from "sanitize-html";
 
 import { MovieAPI } from "../services/movie.service.js";
+import { UserAccountUtils } from "../utils/userAccount.utils.js";
+import { EmailAPI } from "../services/emailUser.service.js";
 
 /**
- * Cette fonction inscrit un novuel utilisateur
+ * Cette fonction vérifie le nouvel utilisateur et envoie un mail de demande de confirmation d'inscription au nouvel utilisateur
  * @param {Object} req - Request Object
  * @param {Object} res - Response Object
  * Renvoit status :
- *    - 201 : inscription réussie
+ *    - 201 : inscription réussie - attente de validation par mail
  *    - 500 : un compte existe déjà avec cette adresse e-mail / erreur du serveur
  */
-export const signup = async (req, res) => {
+export const checkUserSignup = async (req, res) => {
   try {
     // 1. Utiliser Sanitize sur les  données de l'utilisateur pour supprimer  tout ce qui n'est pas des lettres
+    const formData = req.body;
     const sanitizedFormData = {};
 
     for (const field in formData) {
@@ -25,22 +28,94 @@ export const signup = async (req, res) => {
     }
 
     // 2. Continuer l'inscription
-    const userModel = await getUserModel();
+    const { userModel, userToValidateModel } = await getUserModel();
 
     const isUsedMail = await userModel.findOne({
-      email: sanitizedFormData[email],
+      email: sanitizedFormData["email"],
     });
 
     if (isUsedMail) throw new Error("Un compte existe déjà avec ce mail");
 
-    const hashedPassword = await bcrypt.hash(sanitizedFormData[password], 10);
-    const newUser = await userModel.create({
+    // Formulaire valide -> Stocker l'utilisateur avec token en base de données pour attendre la confirmation par mail
+    const hashedPassword = await bcrypt.hash(sanitizedFormData["password"], 10);
+
+    const tokenExpiresDate = new Date();
+    tokenExpiresDate.setHours(tokenExpiresDate.getHours() + 24); // 24h
+
+    const validationToken = {
+      _hex: UserAccountUtils.createUniqueToken(),
+      expires: tokenExpiresDate,
+    };
+
+    const storeUser = await userToValidateModel.create({
       ...sanitizedFormData,
       password: hashedPassword,
+      token: validationToken,
     });
+
+    // Envoie le mail de confirmation
+    await EmailAPI.sendRegisterValidation(
+      storeUser.username,
+      storeUser.email,
+      validationToken
+    );
+
+    res.status(201).json({
+      message: "Merci de confirmer votre inscription par mail!",
+      storeUser,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+/**
+ * Cette fonction inscrit le nouvel utilisateur si son token de validation est valable
+ * Renvoie status :
+ *    - 201 : inscription réussie - attente de validation par mail
+ *    - 500 : un compte existe déjà avec cette adresse e-mail / erreur du serveur
+ */
+export const signup = async (req, res) => {
+  try {
+    const { vtoken } = req.query;
+    const { userModel, userToValidateModel } = await getUserModel();
+
+    // Récupérer l'utilisateur ayant le token de l'url
+    const newUser = await userToValidateModel.findOne({
+      "token._hex": vtoken,
+    });
+
+    // Aucun utilisateur dans la collection des utilisateurs à valider
+    if (!newUser)
+      return res
+        .status(404)
+        .json({ message: "Votre mail n'est pas en attente de validité." });
+
+    // token expiré
+    if (newUser.token.expires < Date.now())
+      throw new Error(
+        "Le jeton n'est plus valide. Merci d'en demander un nouveau"
+      );
+    // Token valide
+    const newUserToInsert = {
+      username: newUser.username,
+      password: newUser.password,
+      email: newUser.email,
+      role: newUser.role,
+      seenMovies: newUser.seenMovies,
+      FavouriteMovies: newUser.FavouriteMovies,
+      seeLaterMovies: newUser.seeLaterMovies,
+    };
+    console.log(newUserToInsert);
+    await userModel.create(newUserToInsert);
+
+    // Supprimer l'utilisateur de la collection de validation d'inscription. Il est possible qu'il ait demandé plusieurs fois un mail -> deleteMany
+    await userToValidateModel.deleteMany({ email: newUser.email });
+    console.log("yes");
 
     res.status(201).json({ message: "Utilisateur créé avec succès!", newUser });
   } catch (err) {
+    console.log(err);
     res.status(500).json({ message: err.message });
   }
 };
@@ -65,7 +140,7 @@ export const login = async (req, res) => {
       */
 
     const wrongCredentials = "Le mail ou le mot de passe sont incorrectes.";
-    const userModel = await getUserModel();
+    const { userModel } = await getUserModel();
     const sanitizedEmail = sanitize(req.body.email);
 
     const user = await userModel.findOne({ email: sanitizedEmail });
@@ -170,7 +245,7 @@ export const checkSession = async (req, res) => {
 export const getMoviesPreferences = async (req, res) => {
   try {
     // TODO: peut-etre ajouter getUserModel à un middleware pour pouvori le récup dans chaque callback
-    const userModel = await getUserModel();
+    const { userModel } = await getUserModel();
 
     const { userId, preferencesString } = req.query;
 
@@ -192,7 +267,7 @@ export const getMoviesPreferences = async (req, res) => {
 export const getMoviePreference = async (req, res) => {
   try {
     // TODO: peut-etre ajouter getUserModel à un middleware pour pouvori le récup dans chaque callback
-    const userModel = await getUserModel();
+    const { userModel } = await getUserModel();
 
     const {
       userId,
@@ -230,7 +305,7 @@ export const getMoviePreference = async (req, res) => {
  */
 export const patchMoviePreference = async (req, res) => {
   try {
-    const userModel = await getUserModel();
+    const { userModel } = await getUserModel();
     const { Movie } = res.locals;
 
     const { userId, movie, preferenceKey } = req.body.params;
@@ -245,7 +320,6 @@ export const patchMoviePreference = async (req, res) => {
     // 2. Vérifier si la préférence demandée sur le frontend est déjà présente.
     // Si oui : supprimer
     // Si non : ajouter
-    isInPreference;
     if (isInPreference) {
       await userModel.findByIdAndUpdate(userId, {
         $pull: { [preferenceKey]: { id: movie.id } },

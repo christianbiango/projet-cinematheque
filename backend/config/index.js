@@ -10,12 +10,18 @@ export const env = {
   mongoMoviesCollectionName: process.env.MONGO_MOVIES_COLLECTION_NAME,
   mongoUsersDBName: process.env.MONGO_USERS_DB_NAME,
   mongoUsersCollectionName: process.env.MONGO_USERS_COLLECTION_NAME,
+  mongoUsersToValidateCollectionName:
+    process.env.MONGO_USERS_TO_VALIDATE_COLLECTION_NAME,
   sessionSecret: process.env.SESSION_SECRET,
   sessionExpiresTime: process.env.SESSION_EXPIRES_TIME,
   sessionAutoRemoveInterval: process.env.SESSION_AUTOREMOVE_INTERVAL,
   mongoSessionsCollectionName: process.env.MONGO_SESSIONS_COLLECTION_NAME,
   defaultFirstPage: process.env.DEFAULT_FIRST_PAGE,
   moviesPerPage: process.env.MOVIES_PER_PAGE,
+  emailService: process.env.EMAIL_SERVICE,
+  emailSender: process.env.EMAIL_SENDER,
+  emailSenderPass: process.env.EMAIL_SENDER_PASS,
+  registerUserEmailSubject: process.env.REGISTER_USER_EMAIL_SUBJECT,
 };
 
 export const TMDB = {

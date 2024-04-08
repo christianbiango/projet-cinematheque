@@ -4,12 +4,12 @@ import { AuthContext } from "../../context/AuthContext";
 
 const Register = () => {
   const [formData, setFormData] = useState([]);
-  const { user, register } = useContext(AuthContext);
+  const { user, checkRegister } = useContext(AuthContext);
 
   const [usernameErrorMessage, setUsernameErrorMessage] = useState("");
   const [emailErrorMessage, setEmailErrorMessage] = useState("");
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
-  const [addressErrorMessage, setAddressErrorMessage] = useState("");
+  const [adressErrorMessage, setAdressErrorMessage] = useState("");
   const [cityErrorMessage, setCityErrorMessage] = useState("");
   const [postalErrorMessage, setPostalErrorMessage] = useState("");
   const [countryErrorMessage, setCountryErrorMessage] = useState("");
@@ -32,15 +32,16 @@ const Register = () => {
     handleRegister();
   };
 
-  const handleRegister = () => {
-    if (register(formData)) navigate("/login");
+  const handleRegister = async () => {
+    const checked = await checkRegister(formData);
+    console.log(checked);
   };
 
   const checkFormInput = () => {
     const checkUsername = formData.username.trim();
     const checkEmail = formData.email.trim().toLowerCase();
     const checkPassword = formData.password.trim();
-    const checkAddress = formData.address.trim();
+    const checkAdress = formData.adress.trim();
     const checkCity = formData.city.trim();
     const checkPostal = formData.postal.trim();
     const checkCountry = formData.country.trim();
@@ -49,7 +50,7 @@ const Register = () => {
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/; // Au moins 8 caractères, avec au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial parmi : @$!%*?&
     const usernameRegex = /^[a-zA-Z0-9éèàôçÉÈÀÔÇ'-]+$/u; // Chiffres, lettres, caractères diacritiques comme é,ê... et apostrophe
-    const addressRegex = /^\d+\s[A-Za-z\s-]+$/i; // Chiffre, puis nom de la rue
+    const adressRegex = /^\d+\s[A-Za-z\s-]+$/i; // Chiffre, puis nom de la rue
 
     const cityRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ\s-]+$/; // Caractères alphabétiques/accentués, tirets
     const postalRegex = /^\d+$/; // Nombre entier positif
@@ -74,11 +75,11 @@ const Register = () => {
         break;
 
       // Addresse
-      case checkAddress.length !== 0:
-        if (typeof checkAddress !== "string")
-          setAddressErrorMessage("Le format de l'addresse est incorrect");
-        else if (!addressRegex.test(checkAddress))
-          setAddressErrorMessage(
+      case checkAdress.length !== 0:
+        if (typeof checkAdress !== "string")
+          setAdressErrorMessage("Le format de l'addresse est incorrect");
+        else if (!adressRegex.test(checkAdress))
+          setAdressErrorMessage(
             "L'addresse doit commencer par un chiffre puis contenir le nom de la rue."
           );
         break;
@@ -146,7 +147,7 @@ const Register = () => {
         setUsernameErrorMessage("");
         setEmailErrorMessage("");
         setPasswordErrorMessage("");
-        setAddressErrorMessage("");
+        setAdressErrorMessage("");
         setCityErrorMessage("");
         setPostalErrorMessage("");
         setCountryErrorMessage("");
@@ -237,22 +238,22 @@ const Register = () => {
             {/* Adresse */}
             <div>
               <label
-                htmlFor="address"
+                htmlFor="adress"
                 className="block text-sm font-medium text-gray-700"
               >
                 Entrez votre adresse
               </label>
               <input
-                id="address"
+                id="adress"
                 type="text"
                 placeholder="Entrez votre adresse"
-                name="address"
+                name="adress"
                 onChange={_onChangeInput}
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               />
-              {addressErrorMessage && (
+              {adressErrorMessage && (
                 <span className="text-red-500 text-sm">
-                  {addressErrorMessage}
+                  {adressErrorMessage}
                 </span>
               )}
             </div>

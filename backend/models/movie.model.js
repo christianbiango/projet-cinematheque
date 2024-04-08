@@ -25,12 +25,10 @@ const getMovieModel = async () => {
           id: {
             type: Number,
             required: true,
-            unique: true,
           },
           titre: {
             type: String,
             required: true,
-            unique: true,
           },
           titreOriginal: {
             type: String,

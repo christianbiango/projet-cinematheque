@@ -1,8 +1,7 @@
 import validator from "validator";
 
 export default function registerMiddleware(req, res, next) {
-  const { email, username, city, postal, country, address, password } =
-    req.body;
+  const { email, username, city, postal, country, adress, password } = req.body;
 
   // Valider l'e-mail
   if (
@@ -71,10 +70,10 @@ export default function registerMiddleware(req, res, next) {
   }
 
   // Valider l'adresse
-  if (address.length > 0) {
+  if (adress.length > 0) {
     if (
-      !validator.matches(address, /^\d+\s[A-Za-z\s-]+$/i) ||
-      typeof address !== "string"
+      !validator.matches(adress, /^\d+\s[A-Za-z\s-]+$/i) ||
+      typeof adress !== "string"
     ) {
       return res.status(400).json({ message: "Adresse invalide" });
     }

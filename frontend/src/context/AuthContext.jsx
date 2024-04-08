@@ -76,10 +76,37 @@ export const AuthProvider = ({ children }) => {
    * @param {Object} dataForm - Formulaire remplit
    * @returns {boolean} - True : inscription réussie || void : Inscription échoéue
    */
-  const register = async (dataForm) => {
+  const register = async (vtoken) => {
     setIsLoading(true);
     try {
-      const { status } = await axios.post(URL.USER_SIGNUP, dataForm, {
+      const { status } = await axios.get(URL.USER_SIGNUP, {
+        params: {
+          vtoken: vtoken,
+        },
+        withCredentials: true,
+      });
+      if (status === 201) {
+        setIsLoading(false);
+        return true;
+      }
+    } catch (err) {
+      console.log(err);
+      if (err.response.status === 400)
+        console.log(err.response.data.message); // Le middleware a échoué
+      else console.log(err);
+      setIsLoading(false);
+    }
+  };
+
+  /**
+   * Cette fonction tente d'envoyer un mail de confirmation d'inscription à l'utilisateur
+   * @param {Object} dataForm - Formulaire remplit
+   * @returns {boolean} - True : inscription réussie || void : Inscription échoéue
+   */
+  const checkRegister = async (dataForm) => {
+    setIsLoading(true);
+    try {
+      const { status } = await axios.post(URL.USER_CHECK_SIGNUP, dataForm, {
         withCredentials: true,
       });
       if (status === 201) {
@@ -277,6 +304,7 @@ export const AuthProvider = ({ children }) => {
         logout,
         isLoggedIn,
         register,
+        checkRegister,
         getHomeMovies,
         getMoviesPreferences,
         patchMoviePreference,

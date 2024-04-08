@@ -3,6 +3,7 @@ import express from "express";
 // CONTROLLERS
 import {
   signup,
+  checkUserSignup,
   login,
   checkSession,
   logout,
@@ -25,7 +26,8 @@ import prepareMoviesOperationsMiddleware from "../middleware/prepareMoviesOperat
 const router = express.Router();
 
 // AUTH
-router.post("/signup", registerMiddleware, signup);
+router.post("/check-signup", registerMiddleware, checkUserSignup);
+router.get("/signup", signup);
 router.post("/login", loginMiddleware, login);
 router.get("/session", checkSession);
 router.delete("/logout", logout);
