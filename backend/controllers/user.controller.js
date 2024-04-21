@@ -21,8 +21,8 @@ export const checkUserSignup = async (req, res) => {
     const sanitizedFormData = {};
 
     for (const field in formData) {
-      if (Object.hasOwnProperty.call(formData, field)) {
-        // hasOwnProperty  est utilisé pour vérifier si une propriété provient de l'objet en lui même et non hérité de son prototype. Cela évite de modifier de façon involontaire des objets du prototype
+      if (formData.hasOwnProperty(field)) {
+        // hasOwnProperty est utilisé pour vérifier si une propriété provient de l'objet en lui même et non hérité de son prototype. Cela évite de modifier de façon involontaire des objets du prototype
         sanitizedFormData[field] = sanitize(req.body[field]);
       }
     }
@@ -342,7 +342,7 @@ export const patchMoviePreference = async (req, res) => {
 };
 
 /**
- * Cette fonction  permet de récupérer les événements proches de la localisation de l'utilisateur.
+ * Cette fonction permet de récupérer les événements proches de la localisation de l'utilisateur.
  * @returns {Array} (200) - Contient les films fetchés, sinon vide
  */
 export const getMoviesNearUser = async (req, res) => {
@@ -353,5 +353,44 @@ export const getMoviesNearUser = async (req, res) => {
     return res.status(200).json(festivals); // Array vide si aucun festival trouvé
   } catch (err) {
     throw err;
+  }
+};
+
+/**
+ * Cette fonction permet de récupérer toutes les informations de l'utilisateur connecté
+ * @returns {Object} - les informations du compte
+ */
+export const getUserInformations = async (req, res) => {
+  try {
+    const { userId } = req.query;
+    const { userModel } = await getUserModel();
+
+    const user = await userModel.findById(userId);
+
+    return res.status(200).json(user);
+  } catch (err) {
+    throw err;
+  }
+};
+
+/**
+ * Cette fonction met à jour les informations de l'utilisateur connecté
+ * @returns {Object} - les informations du compte mis à jour
+ */
+export const updateUserInformations = async (req, res) => {
+  try {
+    const { dataForm, userId } = req.body.params;
+    const { userModel } = await getUserModel();
+
+    const updatedUser = await userModel.findByIdAndUpdate(
+      { _id: userId },
+      dataForm,
+      { new: true } // Pour retourner le document après la mise à jour
+    );
+    // TODO: Nettoyer les données du formulaire. Déterminer les champs possibles à update
+
+    return res.status(200).json(updatedUser);
+  } catch (err) {
+    console.log(err.message);
   }
 };

@@ -28,11 +28,10 @@ export class EmailAPI {
       from: emailSender,
       to: receiverEmail,
       subject: env.registerUserEmailSubject,
-      html: `Bienvenue <strong>${receiverUsername}</strong><br/><br/>Pour finaliser l'inscription, merci de <a href="http://localhost:5173/validate-email/${token._hex}">valider votre compte</a> .`,
+      html: `Bienvenue <strong>${receiverUsername}</strong><br/><br/>Pour finaliser l'inscription, merci de <a href="http://localhost:${env.port}/validate-email/${token._hex}">valider votre compte</a> .`,
     };
 
     // Envoyer le mail
-    console.log(EmailAPI._transporter);
     await EmailAPI._transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
         console.log(error);

@@ -11,6 +11,8 @@ import {
   getMoviePreference,
   patchMoviePreference,
   getMoviesNearUser,
+  getUserInformations,
+  updateUserInformations,
 } from "../controllers/user.controller.js";
 
 import {
@@ -27,10 +29,15 @@ const router = express.Router();
 
 // AUTH
 router.post("/check-signup", registerMiddleware, checkUserSignup);
+
 router.get("/signup", signup);
 router.post("/login", loginMiddleware, login);
 router.get("/session", checkSession);
 router.delete("/logout", logout);
+
+// USER
+router.get("/account", getUserInformations);
+router.put("/update-account", updateUserInformations);
 
 // FILMS
 router.get("/movies", prepareMoviesOperationsMiddleware, getHomeMovies);

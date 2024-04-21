@@ -30,6 +30,11 @@ const NavBar = () => {
               Films à voir
             </Link>
           </li>
+          <li className="mx-4">
+            <Link to="/account" className="hover:text-gray-300">
+              Compte
+            </Link>
+          </li>
           <li>
             <Logout />
           </li>

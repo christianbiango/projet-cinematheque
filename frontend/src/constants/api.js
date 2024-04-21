@@ -3,6 +3,8 @@ export const URL = {
   USER_CHECK_SIGNUP: "http://localhost:9000/api/user/check-signup",
   USER_SIGNUP: "http://localhost:9000/api/user/signup",
   USER_SESSION: "http://localhost:9000/api/user/session",
+  GET_USER_INFORMATIONS: "http://localhost:9000/api/user/account",
+  UPDATE_USER_INFORMATIONS: "http://localhost:9000/api/user/update-account",
   USER_LOGOUT: "http://localhost:9000/api/user/logout",
   GET_HOME_MOVIES: "http://localhost:9000/api/user/movies",
   GET_MOVIES_PREFERENCES: "http://localhost:9000/api/user/movies-preferences",

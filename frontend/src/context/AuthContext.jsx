@@ -295,6 +295,50 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  /**
+   * Cette fonction récupère les informations de l'utilisateur sur sa page compte
+   * @returns {Object} - Les informations de l'utilisateur connecté
+   */
+  const getUserInformations = async () => {
+    try {
+      const { data, status } = await axios.get(URL.GET_USER_INFORMATIONS, {
+        params: {
+          userId: user.id,
+        },
+        withCredentials: true,
+      });
+
+      if (status === 200) {
+        return data;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  /**
+   * Cette fonction met à jour les informations de l'utilisateur sur sa page compte
+   * @returns {Object} - Les informations de l'utilisateur, celles mises à jour comprises
+   */
+  const updateUserInformations = async (dataForm, userId) => {
+    try {
+      const { data, status } = await axios.put(URL.UPDATE_USER_INFORMATIONS, {
+        params: {
+          dataForm: dataForm,
+          userId: userId,
+        },
+        withCredentials: true,
+      });
+
+      if (status === 200) {
+        console.log(data);
+        return data;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -311,6 +355,8 @@ export const AuthProvider = ({ children }) => {
         getMoviePreference,
         getTMDBMovie,
         getMoviesNearUser,
+        getUserInformations,
+        updateUserInformations,
       }}
     >
       {children}
