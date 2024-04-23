@@ -394,3 +394,49 @@ export const updateUserInformations = async (req, res) => {
     console.log(err.message);
   }
 };
+
+export const updatePassword = async (req, res) => {
+  try {
+    const { dataForm, userId } = req.body.params;
+    const reqPassword = dataForm["password"];
+    const { userModel } = await getUserModel();
+
+    // Désinfecter  les données avant de les utiliser pour une modification
+    const sanitizedPassword = sanitize(reqPassword);
+
+    /* Vérifier que le nouveau mot de passe n'est pas le même que l'ancien */
+
+    // 1. Récupérer l'ancien mot de passe
+    const currentUser = await userModel.findOne({
+      _id: userId,
+    });
+
+    if (!currentUser) throw new Error("Utilisateur introuvable");
+    console.log(currentUser.password);
+
+    const currentUserHashedPassword = currentUser.password;
+
+    // 2. Comparer les deux mots de passe
+    const comparePassword = await bcrypt.compare(
+      sanitizedPassword,
+      currentUserHashedPassword
+    );
+
+    if (comparePassword)
+      throw new Error(
+        "Le nouveau mot de passe ne peut pas être identique au précédent"
+      );
+
+    /* Mettre à jour le mot de passe */
+
+    const hashedPassword = await bcrypt.hash(sanitizedPassword, 10);
+    currentUser.password = hashedPassword;
+    await currentUser.save();
+    console.log(currentUser.password);
+    // TODO: Nettoyer les données du formulaire. Déterminer les champs possibles à update
+
+    return res.status(200).json(currentUser);
+  } catch (err) {
+    console.log(err.message);
+  }
+};

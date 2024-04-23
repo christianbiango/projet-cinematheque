@@ -5,6 +5,7 @@ export const URL = {
   USER_SESSION: "http://localhost:9000/api/user/session",
   GET_USER_INFORMATIONS: "http://localhost:9000/api/user/account",
   UPDATE_USER_INFORMATIONS: "http://localhost:9000/api/user/update-account",
+  UPDATE_USER_PASSWORD: "http://localhost:9000/api/user/update-password",
   USER_LOGOUT: "http://localhost:9000/api/user/logout",
   GET_HOME_MOVIES: "http://localhost:9000/api/user/movies",
   GET_MOVIES_PREFERENCES: "http://localhost:9000/api/user/movies-preferences",

@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import ConfirmRegistration from "./pages/AuthPages/ConfirmRegistration";
 import AccountHome from "./pages/AccountPages/AccountHome.jsx";
 import UpdateUser from "./pages/AccountPages/UpdateUser.jsx";
+import UpdatePassword from "./pages/AccountPages/UpdatePassword.jsx";
 
 function App() {
   const location = useLocation();
@@ -46,7 +47,7 @@ function App() {
             ></Route>
             <Route
               path="/account/modifier-mot-de-passe"
-              element={<UpdateUser />}
+              element={<UpdatePassword />}
             ></Route>
             <Route
               path="/account/supprimer-compte"

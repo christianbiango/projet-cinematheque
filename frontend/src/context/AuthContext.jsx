@@ -339,6 +339,30 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  /**
+   * Cette fonction met à jour le mot de passe de l'utilisateur lorsque celui-ci est connecté
+   * @param {Object} dataForm
+   * @param {String} userId
+   * @returns {Object} - Le message de succès ou d'échec
+   */
+  const updatePassword = async (dataForm, userId) => {
+    try {
+      const { data, status } = await axios.put(URL.UPDATE_USER_PASSWORD, {
+        params: {
+          dataForm: dataForm,
+          userId: userId,
+        },
+        withCredentials: true,
+      });
+
+      if (status === 200) {
+        return data;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -357,6 +381,7 @@ export const AuthProvider = ({ children }) => {
         getMoviesNearUser,
         getUserInformations,
         updateUserInformations,
+        updatePassword,
       }}
     >
       {children}

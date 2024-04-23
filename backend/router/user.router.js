@@ -13,6 +13,7 @@ import {
   getMoviesNearUser,
   getUserInformations,
   updateUserInformations,
+  updatePassword,
 } from "../controllers/user.controller.js";
 
 import {
@@ -38,6 +39,7 @@ router.delete("/logout", logout);
 // USER
 router.get("/account", getUserInformations);
 router.put("/update-account", updateUserInformations);
+router.put("/update-password", updatePassword);
 
 // FILMS
 router.get("/movies", prepareMoviesOperationsMiddleware, getHomeMovies);
