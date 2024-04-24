@@ -14,6 +14,8 @@ import {
   getUserInformations,
   updateUserInformations,
   updatePassword,
+  updatePasswordRequest,
+  checkRecoverPasswordToken,
 } from "../controllers/user.controller.js";
 
 import {
@@ -40,6 +42,8 @@ router.delete("/logout", logout);
 router.get("/account", getUserInformations);
 router.put("/update-account", updateUserInformations);
 router.put("/update-password", updatePassword);
+router.post("/update-password-request", updatePasswordRequest);
+router.get("/check-recover-password-token", checkRecoverPasswordToken);
 
 // FILMS
 router.get("/movies", prepareMoviesOperationsMiddleware, getHomeMovies);

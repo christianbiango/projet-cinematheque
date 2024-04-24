@@ -8,7 +8,9 @@ import { useEffect, useState } from "react";
 import ConfirmRegistration from "./pages/AuthPages/ConfirmRegistration";
 import AccountHome from "./pages/AccountPages/AccountHome.jsx";
 import UpdateUser from "./pages/AccountPages/UpdateUser.jsx";
-import UpdatePassword from "./pages/AccountPages/UpdatePassword.jsx";
+import UpdatePassword from "./components/UpdatePasswordForm.jsx";
+import UpdatePasswordRequest from "./pages/AccountPages/UpdatePasswordRequest.jsx";
+import RecoverPassword from "./pages/AuthPages/RecoverPassword.jsx";
 
 function App() {
   const location = useLocation();
@@ -62,6 +64,14 @@ function App() {
         <Route
           path="/validate-email/:vtoken"
           element={<ConfirmRegistration />}
+        ></Route>
+        <Route
+          path="/recover-password-request"
+          element={<UpdatePasswordRequest />}
+        ></Route>
+        <Route
+          path="/recover-password/:ptoken"
+          element={<RecoverPassword />}
         ></Route>
       </Routes>
     </>

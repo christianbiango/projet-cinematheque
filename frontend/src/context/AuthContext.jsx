@@ -363,6 +363,51 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updatePasswordRequest = async (dataForm) => {
+    try {
+      const { data, status } = await axios.post(
+        URL.UPDATE_USER_PASSWORD_REQUEST,
+        {
+          params: {
+            dataForm: dataForm,
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (status === 200) {
+        return data;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  /**
+   * Cette fonction vérifie que le token de réintialisation de mot de passe est valide
+   * @param {String} ptoken
+   * @returns {Object} - L'utilisateur, si le token est valide
+   */
+  const checkRecoverPasswordToken = async (ptoken) => {
+    try {
+      const { data, status } = await axios.get(
+        URL.CHECK_RECOVER_PASSWORD_TOKEN,
+        {
+          params: {
+            ptoken: ptoken,
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (status === 200) {
+        return data;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -382,6 +427,8 @@ export const AuthProvider = ({ children }) => {
         getUserInformations,
         updateUserInformations,
         updatePassword,
+        updatePasswordRequest,
+        checkRecoverPasswordToken,
       }}
     >
       {children}

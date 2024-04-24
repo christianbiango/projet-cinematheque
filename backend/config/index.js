@@ -12,6 +12,8 @@ export const env = {
   mongoUsersCollectionName: process.env.MONGO_USERS_COLLECTION_NAME,
   mongoUsersToValidateCollectionName:
     process.env.MONGO_USERS_TO_VALIDATE_COLLECTION_NAME,
+  mongoForgottenPasswordCollectionName:
+    process.env.MONGO_FORGOTTEN_PASSWORD_COLLECTION_NAME,
   sessionSecret: process.env.SESSION_SECRET,
   sessionExpiresTime: process.env.SESSION_EXPIRES_TIME,
   sessionAutoRemoveInterval: process.env.SESSION_AUTOREMOVE_INTERVAL,
@@ -22,6 +24,7 @@ export const env = {
   emailSender: process.env.EMAIL_SENDER,
   emailSenderPass: process.env.EMAIL_SENDER_PASS,
   registerUserEmailSubject: process.env.REGISTER_USER_EMAIL_SUBJECT,
+  PasswordRecoveryEmailSubject: process.env.PASSWORD_RECOVERY_EMAIL_SUBJECT,
 };
 
 export const TMDB = {

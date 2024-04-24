@@ -15,20 +15,17 @@ export class EmailAPI {
   });
 
   /**
-   * Cette méthode envoit un mail de demande de confirmation à l'utilisateur qui vient de demander à s'inscrire sur le site
-   * @param {String} receiverUsername - Destinataire du mail
-   * @param {String} receiverEmail - email de destination
-   * @param {String} token - Token associé à la confirmation du compte
+   * Cette méthode envoit le mail avec l'html correspondant
+   * @param {String} html - Message du mail
    */
-  static async sendRegisterValidation(receiverUsername, receiverEmail, token) {
+  static async _sendEmail(receiverEmail, html, subject) {
     const emailSender = env.emailSender;
-    console.log(token);
 
     const mailOptions = {
       from: emailSender,
       to: receiverEmail,
-      subject: env.registerUserEmailSubject,
-      html: `Bienvenue <strong>${receiverUsername}</strong><br/><br/>Pour finaliser l'inscription, merci de <a href="http://localhost:${env.port}/validate-email/${token._hex}">valider votre compte</a> .`,
+      subject: subject,
+      html: html,
     };
 
     // Envoyer le mail
@@ -39,5 +36,29 @@ export class EmailAPI {
         console.log("Email envoyé: " + info.response);
       }
     });
+  }
+
+  /**
+   * Cette méthode créer un mail de demande de confirmation à l'utilisateur qui vient de demander à s'inscrire sur le site
+   * @param {String} receiverUsername - Destinataire du mail
+   * @param {String} receiverEmail - email de destination
+   * @param {String} token - Token associé à la confirmation du compte
+   */
+  static async sendRegisterValidation(receiverUsername, receiverEmail, token) {
+    const html = `Bienvenue <strong>${receiverUsername}</strong><br/><br/>Pour finaliser l'inscription, merci de <a href="http://localhost:${env.port}/validate-email/${token}">valider votre compte</a> .`;
+
+    EmailAPI._sendEmail(receiverEmail, html, env.registerUserEmailSubject);
+  }
+
+  /**
+   * Cette méthode créer un mail de création de nouveau mot de passe
+   * @param {String} receiverUsername
+   * @param {String} receiverEmail
+   * @param {String} token
+   */
+  static async sendPasswordRecoverLink(receiverUsername, receiverEmail, token) {
+    const html = `${receiverUsername}, tu as oublié ton mot de passe ?<br/><br/>Tu peux en enregistrer un nouveau ici : <a href="http://localhost:5173/recover-password/${token}">demander un nouveau mot de passe</a> .<br/><br/>Le token est valide pendant 2H.`;
+
+    EmailAPI._sendEmail(receiverEmail, html, env.PasswordRecoveryEmailSubject);
   }
 }

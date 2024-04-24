@@ -1,4 +1,5 @@
 import getUserModel from "../models/user.model.js";
+import getForgottenPasswordModel from "../models/forgottenPassword.model.js";
 import bcrypt from "bcrypt";
 import sanitize from "sanitize-html";
 
@@ -39,13 +40,7 @@ export const checkUserSignup = async (req, res) => {
     // Formulaire valide -> Stocker l'utilisateur avec token en base de données pour attendre la confirmation par mail
     const hashedPassword = await bcrypt.hash(sanitizedFormData["password"], 10);
 
-    const tokenExpiresDate = new Date();
-    tokenExpiresDate.setHours(tokenExpiresDate.getHours() + 24); // 24h
-
-    const validationToken = {
-      _hex: UserAccountUtils.createUniqueToken(),
-      expires: tokenExpiresDate,
-    };
+    const validationToken = UserAccountUtils.createUniqueToken(24); // temps d'expiration du token en heure
 
     const storeUser = await userToValidateModel.create({
       ...sanitizedFormData,
@@ -57,7 +52,7 @@ export const checkUserSignup = async (req, res) => {
     await EmailAPI.sendRegisterValidation(
       storeUser.username,
       storeUser.email,
-      validationToken
+      validationToken._hex
     );
 
     res.status(201).json({
@@ -410,6 +405,7 @@ export const updatePassword = async (req, res) => {
     const currentUser = await userModel.findOne({
       _id: userId,
     });
+    console.log(userId);
 
     if (!currentUser) throw new Error("Utilisateur introuvable");
     console.log(currentUser.password);
@@ -436,6 +432,67 @@ export const updatePassword = async (req, res) => {
     // TODO: Nettoyer les données du formulaire. Déterminer les champs possibles à update
 
     return res.status(200).json(currentUser);
+  } catch (err) {
+    console.log(err.message);
+  }
+};
+
+export const updatePasswordRequest = async (req, res) => {
+  try {
+    const { dataForm } = req.body.params;
+    const reqEmail = dataForm["email"];
+    const { userModel } = await getUserModel();
+    const { forgottenPasswordModel } = await getForgottenPasswordModel();
+
+    const sanitizedEmail = sanitize(reqEmail); // Désinfecter  les données avant de les utiliser pour une modification
+
+    const emailUser = await userModel.findOne({ email: sanitizedEmail });
+
+    // On n'envoit un mail que si un compte existe bien avec le mail
+    if (emailUser) {
+      const validationToken = UserAccountUtils.createUniqueToken(2); // temps d'expiration en heure
+
+      // Envoie le mail de confirmation
+      await EmailAPI.sendPasswordRecoverLink(
+        emailUser.username,
+        sanitizedEmail,
+        validationToken._hex
+      );
+
+      // Enregistrer la requête
+      await forgottenPasswordModel.create({
+        account: emailUser._id,
+        token: validationToken,
+      });
+    }
+
+    res.status(200).json({
+      message:
+        "Si un compte est associé à ce mail, vous obtiendrez un lien d'accès par mail.",
+    });
+  } catch (err) {
+    console.log(err.message);
+  }
+};
+
+export const checkRecoverPasswordToken = async (req, res) => {
+  try {
+    const { ptoken } = req.query;
+
+    const { forgottenPasswordModel } = await getForgottenPasswordModel();
+
+    // Récupérer le compte associé
+    const recoverDocument = await forgottenPasswordModel.findOne({
+      "token._hex": ptoken,
+    });
+
+    // token expiré
+    if (recoverDocument.token.expires < Date.now())
+      throw new Error(
+        "Le jeton n'est plus valide. Merci d'en demander un nouveau"
+      );
+    // Token valide
+    res.status(200).json(recoverDocument.account);
   } catch (err) {
     console.log(err.message);
   }

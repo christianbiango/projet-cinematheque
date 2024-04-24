@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 
 export default function Login() {
@@ -126,6 +126,8 @@ export default function Login() {
                 </span>
               )}
             </div>
+
+            <Link to="/recover-password-request">Mot de passe perdu ?</Link>
 
             {/* Submit */}
             <button
