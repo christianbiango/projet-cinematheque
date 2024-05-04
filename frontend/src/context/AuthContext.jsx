@@ -322,13 +322,18 @@ export const AuthProvider = ({ children }) => {
    */
   const updateUserInformations = async (dataForm, userId) => {
     try {
-      const { data, status } = await axios.put(URL.UPDATE_USER_INFORMATIONS, {
-        params: {
-          dataForm: dataForm,
-          userId: userId,
+      const { data, status } = await axios.put(
+        URL.UPDATE_USER_INFORMATIONS,
+        {
+          params: {
+            dataForm: dataForm,
+            userId: userId,
+          },
         },
-        withCredentials: true,
-      });
+        {
+          withCredentials: true,
+        }
+      );
 
       if (status === 200) {
         console.log(data);

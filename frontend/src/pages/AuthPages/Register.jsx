@@ -36,7 +36,7 @@ const Register = () => {
   const checkFormInput = () => {
     const checkUsername = formData.username.trim();
     const checkEmail = formData.email.trim().toLowerCase();
-    const checkPassword = formData.password.trim();
+    const checkPassword = formData.password;
 
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const passwordRegex =

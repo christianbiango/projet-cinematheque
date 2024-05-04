@@ -13,7 +13,7 @@ import { watchExcelFiles } from "./utils/movie.utils.js";
 // ROUTER
 import userRouter from "./router/user.router.js";
 import authRouter from "./router/auth.router.js";
-import checkSessionMiddleware from "./middleware/checkUserSignup.js";
+import checkSessionMiddleware from "./middleware/checkUserSession.js";
 // APP EXPRESS
 const app = express();
 

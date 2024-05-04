@@ -19,31 +19,24 @@ export const checkUserSignup = async (req, res) => {
   try {
     // 1. Utiliser Sanitize sur les  données de l'utilisateur pour supprimer  tout ce qui n'est pas des lettres
     const formData = req.body;
-    const sanitizedFormData = {};
-
-    for (const field in formData) {
-      if (formData.hasOwnProperty(field)) {
-        // hasOwnProperty est utilisé pour vérifier si une propriété provient de l'objet en lui même et non hérité de son prototype. Cela évite de modifier de façon involontaire des objets du prototype
-        sanitizedFormData[field] = sanitize(req.body[field]);
-      }
-    }
-
+    const { username, email, password } = res.locals;
     // 2. Continuer l'inscription
     const { userModel, userToValidateModel } = await getUserModel();
 
     const isUsedMail = await userModel.findOne({
-      email: sanitizedFormData["email"],
+      email: email,
     });
 
     if (isUsedMail) throw new Error("Un compte existe déjà avec ce mail");
 
     // Formulaire valide -> Stocker l'utilisateur avec token en base de données pour attendre la confirmation par mail
-    const hashedPassword = await bcrypt.hash(sanitizedFormData["password"], 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const validationToken = UserAccountUtils.createUniqueToken(24); // temps d'expiration du token en heure
 
     const storeUser = await userToValidateModel.create({
-      ...sanitizedFormData,
+      username: username,
+      email: email,
       password: hashedPassword,
       token: validationToken,
     });
@@ -136,25 +129,18 @@ export const login = async (req, res) => {
 
     const wrongCredentials = "Le mail ou le mot de passe sont incorrectes.";
     const { userModel } = await getUserModel();
-    const sanitizedEmail = sanitize(req.body.email);
+    const { email, password } = res.locals;
 
-    const user = await userModel.findOne({ email: sanitizedEmail });
+    const user = await userModel.findOne({ email: email });
 
     //  si l'user n'est pas trouvé, renvoit une erreur 404.
     if (!user) {
-      req.session.loginTries++;
       return res.status(404).json({ message: wrongCredentials });
     }
     // compare le mot de passe fourni dans la requete
-    const sanitizedPassword = sanitize(req.body.password);
 
-    const comparePassword = await bcrypt.compare(
-      sanitizedPassword,
-      user.password
-    );
+    const comparePassword = await bcrypt.compare(password, user.password);
     if (!comparePassword) {
-      req.session.loginTries++;
-      console.log(req.session.loginTries);
       return res.status(400).json({ message: wrongCredentials });
     }
 
@@ -356,7 +342,6 @@ export const getMoviesNearUser = async (req, res) => {
  */
 export const getUserInformations = async (req, res) => {
   try {
-    console.log(req.query);
     const { userId } = req.query;
     const { userModel } = await getUserModel();
 
@@ -374,15 +359,15 @@ export const getUserInformations = async (req, res) => {
  */
 export const updateUserInformations = async (req, res) => {
   try {
-    const { dataForm, userId } = req.body.params;
+    const { userId } = req.body.params;
+    const { username } = res.locals;
     const { userModel } = await getUserModel();
 
     const updatedUser = await userModel.findByIdAndUpdate(
       { _id: userId },
-      dataForm,
+      { username: username }, // On ne récupère que l'username pour ne pas mettre à jour un autre champs accidentellement
       { new: true } // Pour retourner le document après la mise à jour
     );
-    // TODO: Nettoyer les données du formulaire. Déterminer les champs possibles à update
 
     return res.status(200).json(updatedUser);
   } catch (err) {
@@ -397,12 +382,10 @@ export const updateUserInformations = async (req, res) => {
  */
 export const updatePassword = async (req, res) => {
   try {
-    const { dataForm, userId } = req.body.params;
-    const reqPassword = dataForm["password"];
+    const { userId } = req.body.params;
+    const { password } = res.locals;
     const { userModel } = await getUserModel();
-
-    // Désinfecter  les données avant de les utiliser pour une modification
-    const sanitizedPassword = sanitize(reqPassword);
+    const { forgottenPasswordModel } = await getForgottenPasswordModel();
 
     /* Vérifier que le nouveau mot de passe n'est pas le même que l'ancien */
 
@@ -410,16 +393,14 @@ export const updatePassword = async (req, res) => {
     const currentUser = await userModel.findOne({
       _id: userId,
     });
-    console.log(userId);
 
     if (!currentUser) throw new Error("Utilisateur introuvable");
-    console.log(currentUser.password);
 
     const currentUserHashedPassword = currentUser.password;
 
     // 2. Comparer les deux mots de passe
     const comparePassword = await bcrypt.compare(
-      sanitizedPassword,
+      password,
       currentUserHashedPassword
     );
 
@@ -430,11 +411,12 @@ export const updatePassword = async (req, res) => {
 
     /* Mettre à jour le mot de passe */
 
-    const hashedPassword = await bcrypt.hash(sanitizedPassword, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
     currentUser.password = hashedPassword;
     await currentUser.save();
-    console.log(currentUser.password);
-    // TODO: Nettoyer les données du formulaire. Déterminer les champs possibles à update
+
+    // Supprimer toute occurrence de mot de passe oublié
+    await forgottenPasswordModel.deleteMany({ _id: userId });
 
     return res.status(200).json(currentUser);
   } catch (err) {
@@ -442,16 +424,19 @@ export const updatePassword = async (req, res) => {
   }
 };
 
+/**
+ * Cette fonction transmet le lien de récupération de mot de passe par mail
+ * Renvoie status :
+ *    - 200 : Un mail a tenté d'être enovyé par le serveur
+ */
 export const updatePasswordRequest = async (req, res) => {
   try {
     const { dataForm } = req.body.params;
-    const reqEmail = dataForm["email"];
+    const { email } = res.locals;
     const { userModel } = await getUserModel();
     const { forgottenPasswordModel } = await getForgottenPasswordModel();
 
-    const sanitizedEmail = sanitize(reqEmail); // Désinfecter  les données avant de les utiliser pour une modification
-
-    const emailUser = await userModel.findOne({ email: sanitizedEmail });
+    const emailUser = await userModel.findOne({ email: email });
 
     // On n'envoit un mail que si un compte existe bien avec le mail
     if (emailUser) {
@@ -460,7 +445,7 @@ export const updatePasswordRequest = async (req, res) => {
       // Envoie le mail de confirmation
       await EmailAPI.sendPasswordRecoverLink(
         emailUser.username,
-        sanitizedEmail,
+        email,
         validationToken._hex
       );
 
