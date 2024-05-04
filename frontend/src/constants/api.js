@@ -21,4 +21,5 @@ export const URL = {
   GET_NEAR_USER_MOVIES: "http://localhost:9000/api/user/near-movies",
   UPDATE_USER_PASSWORD_REQUEST:
     "http://localhost:9000/api/user/update-password-request",
+  DELETE_ACCOUNT: "http://localhost:9000/api/user/delete-account",
 };

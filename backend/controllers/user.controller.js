@@ -177,6 +177,31 @@ export const logout = async (req, res) => {
 };
 
 /**
+ * Cette fonction supprime le compte de l'utilsateur, ainsi que toutes ses demandes de modification de compte
+ * @param {Object} req - Request Object
+ * @param {Object} res - Response Object
+ * Renvoit un status :
+ *    - 204 : Suppression réussie
+ */
+export const deleteAccount = async (req, res) => {
+  try {
+    console.log(req.query);
+    const { userId } = req.query;
+    const { userModel } = await getUserModel();
+    const { forgottenPasswordModel } = await getForgottenPasswordModel();
+
+    await Promise.all([
+      userModel.deleteOne({ _id: userId }),
+      forgottenPasswordModel.deleteMany({ _id: userId }),
+    ]);
+
+    return res.status(204).send("Compte supprimé");
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+/**
  * Cette fonction vérifie si l'utilsateur est connecté à chacune de ses actions
  * @param {Object} req - Request Object
  * @param {Object} res - Response Object

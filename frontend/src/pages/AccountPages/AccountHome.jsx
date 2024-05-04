@@ -1,10 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import DeleteAccountModal from "../../components/DeleteAccountModal";
 
 const AccountHome = () => {
   const [currentUser, setCurrentUser] = useState(null);
-  const { getUserInformations } = useContext(AuthContext);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const { getUserInformations, deleteAccount, logout } =
+    useContext(AuthContext);
   useEffect(() => {
     getUserInformations().then((user) => setCurrentUser(user));
   }, []);
@@ -21,6 +24,19 @@ const AccountHome = () => {
     const dateString = `Le ${day}/${month}/${year} à ${hour}h${minutes}`;
 
     return dateString;
+  };
+
+  const handleDeleteModalOpen = () => {
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDeleteModalClose = () => {
+    setIsDeleteModalOpen(false);
+  };
+
+  const handleDeleteAccount = async () => {
+    await deleteAccount(currentUser._id);
+    await logout();
   };
 
   return (
@@ -95,15 +111,21 @@ const AccountHome = () => {
             </Link>
           </li>
           <li className="mx-4">
-            <Link
-              to="/account/supprimer-compte"
+            <button
+              onClick={handleDeleteModalOpen}
               className="hover:text-gray-300"
             >
               Supprimer le compte
-            </Link>
+            </button>
           </li>
         </ul>
       </div>
+      {/* Fenêtre modale de suppression de compte */}
+      <DeleteAccountModal
+        isOpen={isDeleteModalOpen}
+        onClose={handleDeleteModalClose}
+        onDelete={handleDeleteAccount}
+      />
     </div>
   );
 };

@@ -51,10 +51,6 @@ function App() {
               path="/account/modifier-mot-de-passe"
               element={<UpdatePassword />}
             ></Route>
-            <Route
-              path="/account/supprimer-compte"
-              element={<UpdateUser />}
-            ></Route>
           </Route>
         </Route>
 

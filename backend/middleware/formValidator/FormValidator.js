@@ -45,9 +45,9 @@ export class formValidator {
    */
   static checkLoginPassword(loginPassword) {
     return (
-      loginPassword.length === 0 ||
-      typeof loginPassword !== "string" ||
-      loginPassword === null
+      loginPassword.length > 0 &&
+      typeof loginPassword === "string" &&
+      loginPassword !== null
     );
   }
 

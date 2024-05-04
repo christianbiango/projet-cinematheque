@@ -413,6 +413,23 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  /**
+   * Cette fonction supprime définitivement le comtpe d'un utilisateur
+   * @param {String} userId
+   */
+  const deleteAccount = async (userId) => {
+    try {
+      await axios.delete(URL.DELETE_ACCOUNT, {
+        params: {
+          userId: userId,
+        },
+        withCredentials: true,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -434,6 +451,7 @@ export const AuthProvider = ({ children }) => {
         updatePassword,
         updatePasswordRequest,
         checkRecoverPasswordToken,
+        deleteAccount,
       }}
     >
       {children}

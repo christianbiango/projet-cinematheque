@@ -12,6 +12,7 @@ import {
   updatePassword,
   updatePasswordRequest,
   checkRecoverPasswordToken,
+  deleteAccount,
 } from "../controllers/user.controller.js";
 
 import {
@@ -44,6 +45,7 @@ router.post(
 ); // Requête de mot de passe oublié, envoit par mail du lien
 router.get("/check-recover-password-token", checkRecoverPasswordToken); // Vérification du token Lorsque l'utilisateur entre le lien de récupération de mot de passe
 router.delete("/logout", logout);
+router.delete("/delete-account", deleteAccount);
 
 // FILMS
 router.get("/movies", prepareMoviesOperationsMiddleware, getHomeMovies);

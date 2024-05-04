@@ -12,7 +12,7 @@ export default function loginMiddleware(req, res, next) {
   const cleanedPassword = sanitize(password);
 
   // Valider l'e-mail
-  if (formValidator.checkEmail(cleanedEmail)) {
+  if (!formValidator.checkEmail(cleanedEmail)) {
     return res.status(400).json({ message: "Email invalide" });
   }
 
