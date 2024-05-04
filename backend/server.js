@@ -12,6 +12,8 @@ import { watchExcelFiles } from "./utils/movie.utils.js";
 
 // ROUTER
 import userRouter from "./router/user.router.js";
+import authRouter from "./router/auth.router.js";
+import checkSessionMiddleware from "./middleware/checkUserSignup.js";
 // APP EXPRESS
 const app = express();
 
@@ -51,7 +53,8 @@ app.use(
 );
 
 // PREFIX ROUTES
-app.use("/api/user", userRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/user", checkSessionMiddleware, userRouter);
 
 // MIDDLEWARE D'ERREURS
 app.use((req, res, next) => {

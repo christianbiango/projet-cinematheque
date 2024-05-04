@@ -48,6 +48,8 @@ En effet, les dépendances sont listées ici (non exhaustif) à des fins de docu
 | xlsx 0.18.5                     |
 | fs 0.0.1-security               |
 | cors 2.8.5                      |
+| sanitize-html 2.13.0            |
+| express-rate-limit 1.18.0       |
 
 ## Questions ou Problèmes
 

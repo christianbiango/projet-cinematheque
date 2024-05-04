@@ -209,7 +209,7 @@ export const checkSession = async (req, res) => {
       const expiresDate = new Date(req.session.cookie._expires);
 
       if (now < expiresDate) {
-        res.json({
+        res.status(200).json({
           isLoggedIn: true,
           user: {
             username: req.session.username,
@@ -357,6 +357,7 @@ export const getMoviesNearUser = async (req, res) => {
  */
 export const getUserInformations = async (req, res) => {
   try {
+    console.log(req.query);
     const { userId } = req.query;
     const { userModel } = await getUserModel();
 
@@ -390,6 +391,11 @@ export const updateUserInformations = async (req, res) => {
   }
 };
 
+/**
+ * Cette fonction met à jour le mot de passe de l'utilisateur
+ * Renvoie status :
+ *    - 200 : Mot de passe mis à jour
+ */
 export const updatePassword = async (req, res) => {
   try {
     const { dataForm, userId } = req.body.params;
@@ -475,6 +481,11 @@ export const updatePasswordRequest = async (req, res) => {
   }
 };
 
+/**
+ * Cette fonction vérifie le token de changement de mot de passe lorsque l'utilsiateur  clique sur le lien reçu dans son mail
+ * Renvoie status :
+ *    - 200 : le compte associé à l'utilisateur
+ */
 export const checkRecoverPasswordToken = async (req, res) => {
   try {
     const { ptoken } = req.query;

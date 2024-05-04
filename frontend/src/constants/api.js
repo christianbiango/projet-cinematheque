@@ -1,8 +1,11 @@
 export const URL = {
-  USER_LOGIN: "http://localhost:9000/api/user/login",
-  USER_CHECK_SIGNUP: "http://localhost:9000/api/user/check-signup",
-  USER_SIGNUP: "http://localhost:9000/api/user/signup",
-  USER_SESSION: "http://localhost:9000/api/user/session",
+  // Auth
+  USER_LOGIN: "http://localhost:9000/api/auth/login",
+  USER_CHECK_SIGNUP: "http://localhost:9000/api/auth/check-signup",
+  USER_SIGNUP: "http://localhost:9000/api/auth/signup",
+  USER_SESSION: "http://localhost:9000/api/auth/session",
+
+  // User
   GET_USER_INFORMATIONS: "http://localhost:9000/api/user/account",
   UPDATE_USER_INFORMATIONS: "http://localhost:9000/api/user/update-account",
   UPDATE_USER_PASSWORD: "http://localhost:9000/api/user/update-password",

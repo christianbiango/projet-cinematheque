@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import ConfirmRegistration from "./pages/AuthPages/ConfirmRegistration";
 import AccountHome from "./pages/AccountPages/AccountHome.jsx";
 import UpdateUser from "./pages/AccountPages/UpdateUser.jsx";
-import UpdatePassword from "./components/UpdatePasswordForm.jsx";
+import UpdatePassword from "./pages/AccountPages/UpdatePassword.jsx";
 import UpdatePasswordRequest from "./pages/AccountPages/UpdatePasswordRequest.jsx";
 import RecoverPassword from "./pages/AuthPages/RecoverPassword.jsx";
 
