@@ -45,7 +45,7 @@ export class EmailAPI {
    * @param {String} token - Token associé à la confirmation du compte
    */
   static async sendRegisterValidation(receiverUsername, receiverEmail, token) {
-    const html = `Bienvenue <strong>${receiverUsername}</strong><br/><br/>Pour finaliser l'inscription, merci de <a href="http://localhost:${env.port}/validate-email/${token}">valider votre compte</a> .`;
+    const html = `Bienvenue <strong>${receiverUsername}</strong><br/><br/>Pour finaliser l'inscription, merci de <a href="http://localhost:5173/validate-email/${token}">valider votre compte</a> .`;
 
     EmailAPI._sendEmail(receiverEmail, html, env.registerUserEmailSubject);
   }

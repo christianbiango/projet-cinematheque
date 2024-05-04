@@ -43,45 +43,5 @@ export default function registerMiddleware(req, res, next) {
     return res.status(400).json({ message: "Nom d'utilisateur invalide" });
   }
 
-  // Valider la ville
-  if (city.length !== 0) {
-    if (
-      !validator.matches(city, /^[A-Za-zÀ-ÖØ-öø-ÿ\s-]+$/) ||
-      typeof city !== "string"
-    ) {
-      return res.status(400).json({ message: "Ville invalide" });
-    }
-  }
-
-  // Valider le code postal
-  if (postal.length > 0) {
-    if (
-      !validator.matches(postal, /^\d+$/) ||
-      typeof postal !== "string" ||
-      isNaN(postal)
-    ) {
-      return res.status(400).json({ message: "Code postal invalide" });
-    }
-  }
-
-  // Valider le pays
-  if (country.length > 0) {
-    if (
-      !validator.matches(country, /^[A-Za-zÀ-ÖØ-öø-ÿ\s-]+$/) ||
-      typeof country !== "string"
-    ) {
-      return res.status(400).json({ message: "Pays invalide" });
-    }
-  }
-
-  // Valider l'adresse
-  if (adress.length > 0) {
-    if (
-      !validator.matches(adress, /^\d+\s[A-Za-z\s-]+$/i) ||
-      typeof adress !== "string"
-    ) {
-      return res.status(400).json({ message: "Adresse invalide" });
-    }
-  }
   next(); // passer à la fonction register
 }

@@ -9,10 +9,6 @@ const Register = () => {
   const [usernameErrorMessage, setUsernameErrorMessage] = useState("");
   const [emailErrorMessage, setEmailErrorMessage] = useState("");
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
-  const [adressErrorMessage, setAdressErrorMessage] = useState("");
-  const [cityErrorMessage, setCityErrorMessage] = useState("");
-  const [postalErrorMessage, setPostalErrorMessage] = useState("");
-  const [countryErrorMessage, setCountryErrorMessage] = useState("");
 
   const navigate = useNavigate();
 
@@ -41,19 +37,11 @@ const Register = () => {
     const checkUsername = formData.username.trim();
     const checkEmail = formData.email.trim().toLowerCase();
     const checkPassword = formData.password.trim();
-    const checkAdress = formData.adress.trim();
-    const checkCity = formData.city.trim();
-    const checkPostal = formData.postal.trim();
-    const checkCountry = formData.country.trim();
 
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/; // Au moins 8 caractères, avec au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial parmi : @$!%*?&
     const usernameRegex = /^[a-zA-Z0-9éèàôçÉÈÀÔÇ'-]+$/u; // Chiffres, lettres, caractères diacritiques comme é,ê... et apostrophe
-    const adressRegex = /^\d+\s[A-Za-z\s-]+$/i; // Chiffre, puis nom de la rue
-
-    const cityRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ\s-]+$/; // Caractères alphabétiques/accentués, tirets
-    const postalRegex = /^\d+$/; // Nombre entier positif
 
     switch (true) {
       // username
@@ -72,47 +60,6 @@ const Register = () => {
         break;
       case !typeof checkUsername === "string":
         setUsernameErrorMessage("Le nom d'utilisateur est incorrecte.");
-        break;
-
-      // Addresse
-      case checkAdress.length !== 0:
-        if (typeof checkAdress !== "string")
-          setAdressErrorMessage("Le format de l'addresse est incorrect");
-        else if (!adressRegex.test(checkAdress))
-          setAdressErrorMessage(
-            "L'addresse doit commencer par un chiffre puis contenir le nom de la rue."
-          );
-        break;
-
-      // Ville
-      case checkCity.length !== 0:
-        if (typeof checkCity !== "string")
-          setCityErrorMessage("Le format de la ville est incorrect");
-        else if (!cityRegex.test(checkCity))
-          setCityErrorMessage(
-            "La ville doit contenir des caractères alphabétiques ou accentués ou des tirets"
-          );
-        break;
-      // Postal
-      case checkPostal.length !== 0 || checkPostal !== null:
-        if (typeof checkPostal !== "string" || isNaN(checkPostal))
-          setPostalErrorMessage(
-            "Le code postal doit être un nombre entier positif"
-          );
-        else if (!postalRegex.test(checkPostal))
-          setPostalErrorMessage(
-            "Le code postal doit être un nombre entier positif"
-          );
-        break;
-
-      // Pays
-      case checkCountry.length !== 0 || checkCountry !== null:
-        if (typeof checkCountry !== "string")
-          setCityErrorMessage("Le format du pays est incorrect");
-        else if (!cityRegex.test(checkCountry))
-          setCountryErrorMessage(
-            "Le pays doit contenir des caractères alphabétiques ou accentués ou des tirets"
-          );
         break;
       // Email
       case checkEmail.length === 0 || checkEmail === null:
@@ -147,10 +94,6 @@ const Register = () => {
         setUsernameErrorMessage("");
         setEmailErrorMessage("");
         setPasswordErrorMessage("");
-        setAdressErrorMessage("");
-        setCityErrorMessage("");
-        setPostalErrorMessage("");
-        setCountryErrorMessage("");
     }
   };
 
@@ -231,96 +174,6 @@ const Register = () => {
               {passwordErrorMessage && (
                 <span className="text-red-500 text-sm">
                   {passwordErrorMessage}
-                </span>
-              )}
-            </div>
-
-            {/* Adresse */}
-            <div>
-              <label
-                htmlFor="adress"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Entrez votre adresse
-              </label>
-              <input
-                id="adress"
-                type="text"
-                placeholder="Entrez votre adresse"
-                name="adress"
-                onChange={_onChangeInput}
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-              {adressErrorMessage && (
-                <span className="text-red-500 text-sm">
-                  {adressErrorMessage}
-                </span>
-              )}
-            </div>
-
-            {/* Ville */}
-            <div>
-              <label
-                htmlFor="city"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Entrez votre ville
-              </label>
-              <input
-                id="city"
-                type="text"
-                placeholder="Entrez votre ville"
-                name="city"
-                onChange={_onChangeInput}
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-              {cityErrorMessage && (
-                <span className="text-red-500 text-sm">{cityErrorMessage}</span>
-              )}
-            </div>
-
-            {/* Postal */}
-            <div>
-              <label
-                htmlFor="postal"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Entrez votre code postal
-              </label>
-              <input
-                id="postal"
-                type="number"
-                placeholder="Entrez votre code postal"
-                name="postal"
-                onChange={_onChangeInput}
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-              {postalErrorMessage && (
-                <span className="text-red-500 text-sm">
-                  {postalErrorMessage}
-                </span>
-              )}
-            </div>
-
-            {/* Country */}
-            <div>
-              <label
-                htmlFor="country"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Entrez votre pays
-              </label>
-              <input
-                id="country"
-                type="text"
-                placeholder="Entrez votre pays"
-                name="country"
-                onChange={_onChangeInput}
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-              {countryErrorMessage && (
-                <span className="text-red-500 text-sm">
-                  {countryErrorMessage}
                 </span>
               )}
             </div>

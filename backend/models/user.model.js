@@ -26,12 +26,6 @@ const getUserModel = async () => {
         password: { type: String, require: true },
         email: { type: String, require: true, unique: true },
         role: { type: Number, require: true, default: 0 },
-        localization: {
-          adress: { type: String, require: false },
-          city: { type: String, require: false },
-          postal: { type: Number, require: false },
-          country: { type: String, require: false },
-        },
         seenMovies: [
           {
             unique: false,

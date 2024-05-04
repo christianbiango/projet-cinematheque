@@ -261,7 +261,6 @@ export const getMoviesPreferences = async (req, res) => {
  */
 export const getMoviePreference = async (req, res) => {
   try {
-    // TODO: peut-etre ajouter getUserModel à un middleware pour pouvori le récup dans chaque callback
     const { userModel } = await getUserModel();
 
     const {
