@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }) => {
       dispatch(resetMoviesSlice());
       dispatch(resetUsersSlice());
     } catch (err) {
-      console.log(err);
+      return err.response.data;
     }
     setUser(null);
   };
@@ -126,7 +126,8 @@ export const AuthProvider = ({ children }) => {
 
       setIsLoading(false);
     } catch (err) {
-      console.log(err);
+      return err.response.data;
+    } finally {
       setIsLoading(false);
     }
   };
@@ -153,7 +154,7 @@ export const AuthProvider = ({ children }) => {
         return data;
       }
     } catch (err) {
-      console.log(err);
+      return err.response.data;
     }
   };
 
@@ -176,7 +177,7 @@ export const AuthProvider = ({ children }) => {
         return data;
       }
     } catch (err) {
-      console.log(err);
+      return err.response.data;
     }
   };
 
@@ -205,7 +206,7 @@ export const AuthProvider = ({ children }) => {
         return data;
       }
     } catch (err) {
-      console.log(err);
+      return err.response.data;
     }
   };
 
@@ -222,14 +223,13 @@ export const AuthProvider = ({ children }) => {
           movie: movie,
           preferenceKey: preferenceKey,
         },
-        withCredentials: true,
       });
 
       if (status === 201 || status === 200) {
         return data;
       }
     } catch (err) {
-      console.log(err);
+      return err.response.data;
     }
   };
 
@@ -253,7 +253,7 @@ export const AuthProvider = ({ children }) => {
         return data;
       }
     } catch (err) {
-      console.log(err);
+      return err.response.data;
     }
   };
 
@@ -277,7 +277,7 @@ export const AuthProvider = ({ children }) => {
         return data;
       }
     } catch (err) {
-      console.log(err);
+      return err.response.data;
     }
   };
 
@@ -298,7 +298,7 @@ export const AuthProvider = ({ children }) => {
         return data;
       }
     } catch (err) {
-      console.log(err);
+      return err.response.data;
     }
   };
 
@@ -322,7 +322,6 @@ export const AuthProvider = ({ children }) => {
       );
 
       if (status === 200) {
-        console.log(data);
         setUser({ ...user, username: data.data });
         return data;
       }

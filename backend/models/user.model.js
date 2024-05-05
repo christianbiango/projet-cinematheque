@@ -37,6 +37,7 @@ const getUserModel = async () => {
           { type: Movie.schema, ref: `${moviesDBName}.movies` },
         ],
         seeLaterMovies: [{ type: Movie.schema, ref: `${moviesDBName}.movies` }],
+        lastAccountUpdate: { type: Date, default: Date.now },
       };
 
       const userSchema = new Schema(templateSchema, {

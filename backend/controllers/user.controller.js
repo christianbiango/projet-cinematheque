@@ -387,7 +387,7 @@ export const updateUserInformations = async (req, res) => {
 
     const updatedUser = await userModel.findByIdAndUpdate(
       { _id: userId },
-      { username: username } // On ne récupère que l'username pour ne pas mettre à jour un autre champs accidentellement
+      { username: username, lastAccountUpdate: Date.now() } // On ne récupère que l'username pour ne pas mettre à jour un autre champs accidentellement
       //{ new: true } // Pour retourner le document après la mise à jour
     );
 
@@ -456,6 +456,7 @@ export const updatePassword = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     currentUser.password = hashedPassword;
+    currentUser.lastAccountUpdate = Date.now();
     await currentUser.save();
 
     // Supprimer toute occurrence de mot de passe oublié

@@ -5,14 +5,35 @@ import DeleteAccountModal from "../../components/DeleteAccountModal";
 
 const AccountHome = () => {
   const [currentUser, setCurrentUser] = useState(null);
+  const [hasLastUpdate, setHasLastUpdate] = useState(null);
   const [deleteAccountMessage, setDeleteAccountMessage] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const { getUserInformations, deleteAccount, logout } =
     useContext(AuthContext);
   useEffect(() => {
-    getUserInformations().then((user) => setCurrentUser(user));
+    const fetchUserInformations = async () => {
+      const response = await getUserInformations();
+      setCurrentUser(response);
+
+      if (response) {
+        const result = checkLastAccountUpdate(response);
+        setHasLastUpdate(result);
+      }
+    };
+    fetchUserInformations();
   }, []);
 
+  const checkLastAccountUpdate = (response) => {
+    const timeDifference =
+      new Date(response.lastAccountUpdate).getTime() -
+      new Date(response.createdAt).getTime();
+
+    // Convertir la différence en minutes
+    const minutesDifference = timeDifference / (1000 * 60); // 1000 millisecondes par seconde, 60 secondes par minute
+
+    // Vérifier si la différence est inférieure à 1 minute
+    return minutesDifference > 1;
+  };
   const formatDate = (date) => {
     const jsDate = new Date(date);
     const day = jsDate.getDate();
@@ -85,9 +106,10 @@ const AccountHome = () => {
                 <label className="block text-gray-700 text-sm font-bold mb-2">
                   Date de dernière modification du compte:
                 </label>
+
                 <p className="text-gray-900">
-                  {currentUser?.updatedAt
-                    ? formatDate(currentUser.updatedAt)
+                  {currentUser?.lastAccountUpdate && hasLastUpdate
+                    ? formatDate(currentUser.lastAccountUpdate)
                     : "Aucune"}
                 </p>
               </div>
