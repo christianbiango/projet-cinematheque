@@ -1,41 +1,50 @@
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const UpdateUser = () => {
   const { updateUserInformations, user } = useContext(AuthContext);
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [updateAccountResult, setUpdateAccountResult] = useState(null);
   const [formData, setFormData] = useState({ username: user.username });
   const [usernameErrorMessage, setUsernameErrorMessage] = useState("");
-
-  const navigate = useNavigate();
 
   const _onChangeInput = (e) => {
     const { name, value } = e.target;
     setFormData((formData) => ({ ...formData, [name]: value }));
-    console.log(formData);
   };
 
   const handleUpdate = async () => {
-    const hasUpdated = await updateUserInformations(formData, user.id);
-    if (hasUpdated) navigate("/account");
+    const response = await updateUserInformations(formData, user.id);
+    if (response?.message && response?.status)
+      setUpdateAccountResult({
+        message: response.message,
+        status: response.status,
+      });
+    else setUpdateAccountResult(response);
   };
 
   const submitForm = (e) => {
     e.preventDefault();
-    checkFormInput();
-    if (usernameErrorMessage === "") {
+    setFormSubmitted(true);
+    const result = checkFormInput();
+
+    if (result) {
       handleUpdate();
     }
   };
 
   const checkFormInput = () => {
-    const checkUsername = formData.username.trim();
+    let checkUsername;
+    if (formData.username) checkUsername = formData.username.trim();
 
     const usernameRegex = /^[a-zA-Z0-9éèàôçÉÈÀÔÇ'-]+$/u; // Chiffres, lettres, caractères diacritiques comme é,ê... et apostrophe
 
     switch (true) {
       // username
-      case checkUsername.length === 0 || checkUsername === null:
+      case checkUsername === undefined ||
+        checkUsername.length === 0 ||
+        checkUsername === null:
         setUsernameErrorMessage("Vous avez oublié votre nom d'utilisateur ?");
         break;
       case checkUsername.length > 32:
@@ -53,6 +62,7 @@ const UpdateUser = () => {
         break;
       default:
         setUsernameErrorMessage("");
+        return true;
     }
   };
 
@@ -60,6 +70,15 @@ const UpdateUser = () => {
     <div className="container mx-auto mt-20">
       <div className="max-w-md mx-auto bg-white shadow-md rounded-lg overflow-hidden">
         <div className="p-6">
+          {formSubmitted && updateAccountResult && (
+            <span
+              className={`text-${
+                updateAccountResult.status === 200 ? "green" : "red"
+              }-500 text-sm`}
+            >
+              {updateAccountResult.message}
+            </span>
+          )}
           <h1 className="text-2xl font-semibold text-gray-800 mb-4 mt-10">
             Modifier les informations du compte
           </h1>
@@ -80,6 +99,11 @@ const UpdateUser = () => {
                 onChange={_onChangeInput}
                 name="username"
               />
+              {formSubmitted && usernameErrorMessage && (
+                <span className="text-red-500 text-sm">
+                  {usernameErrorMessage}
+                </span>
+              )}
             </div>
             <button
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
@@ -89,6 +113,9 @@ const UpdateUser = () => {
             </button>
           </form>
         </div>
+        <Link to="/account" className="text-indigo-600 hover:text-indigo-700">
+          Voir votre compte
+        </Link>
       </div>
     </div>
   );

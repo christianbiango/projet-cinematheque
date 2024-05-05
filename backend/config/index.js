@@ -23,6 +23,7 @@ export const env = {
   emailService: process.env.EMAIL_SERVICE,
   emailSender: process.env.EMAIL_SENDER,
   emailSenderPass: process.env.EMAIL_SENDER_PASS,
+  deletedAccountEmailSubject: process.env.DELETED_ACCOUNT_EMAIL_SUBJECT,
   registerUserEmailSubject: process.env.REGISTER_USER_EMAIL_SUBJECT,
   PasswordRecoveryEmailSubject: process.env.PASSWORD_RECOVERY_EMAIL_SUBJECT,
 };

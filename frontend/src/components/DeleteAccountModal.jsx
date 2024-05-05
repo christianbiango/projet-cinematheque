@@ -1,9 +1,14 @@
 import React from "react";
 
-const DeleteAccountModal = ({ isOpen, onClose, onDelete }) => {
+const DeleteAccountModal = ({
+  isOpen,
+  onClose,
+  onDelete,
+  deleteAccountMessage,
+}) => {
   const handleDelete = () => {
     onDelete();
-    onClose();
+    //onClose();
   };
 
   return (
@@ -19,6 +24,15 @@ const DeleteAccountModal = ({ isOpen, onClose, onDelete }) => {
       <div className="modal-container fixed top-0 left-0 right-0 mx-auto max-w-sm p-6 rounded-lg shadow-lg bg-white">
         <div className="modal-content">
           <div className="modal-header">
+            {deleteAccountMessage && (
+              <span
+                className={`text-${
+                  deleteAccountMessage?.status === 204 ? "green" : "red"
+                }-500 text-sm`}
+              >
+                {deleteAccountMessage.message}
+              </span>
+            )}
             <h3 className="modal-title text-lg font-semibold">
               Supprimer le compte
             </h3>
@@ -38,7 +52,11 @@ const DeleteAccountModal = ({ isOpen, onClose, onDelete }) => {
             <button className="btn btn-danger" onClick={handleDelete}>
               Supprimer
             </button>
-            <button className="btn" onClick={onClose}>
+            <button
+              disabled={deleteAccountMessage?.status === 204}
+              className="btn"
+              onClick={onClose}
+            >
               Annuler
             </button>
           </div>

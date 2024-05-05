@@ -5,6 +5,7 @@ import DeleteAccountModal from "../../components/DeleteAccountModal";
 
 const AccountHome = () => {
   const [currentUser, setCurrentUser] = useState(null);
+  const [deleteAccountMessage, setDeleteAccountMessage] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const { getUserInformations, deleteAccount, logout } =
     useContext(AuthContext);
@@ -35,8 +36,12 @@ const AccountHome = () => {
   };
 
   const handleDeleteAccount = async () => {
-    await deleteAccount(currentUser._id);
-    await logout();
+    const response = await deleteAccount(currentUser._id);
+    if (response && response?.message) setDeleteAccountMessage(response);
+
+    setTimeout(async () => {
+      await logout();
+    }, 2000);
   };
 
   return (
@@ -125,6 +130,7 @@ const AccountHome = () => {
         isOpen={isDeleteModalOpen}
         onClose={handleDeleteModalClose}
         onDelete={handleDeleteAccount}
+        deleteAccountMessage={deleteAccountMessage}
       />
     </div>
   );

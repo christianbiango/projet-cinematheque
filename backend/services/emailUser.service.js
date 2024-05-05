@@ -45,7 +45,7 @@ export class EmailAPI {
    * @param {String} token - Token associé à la confirmation du compte
    */
   static async sendRegisterValidation(receiverUsername, receiverEmail, token) {
-    const html = `Bienvenue <strong>${receiverUsername}</strong><br/><br/>Pour finaliser l'inscription, merci de <a href="http://localhost:5173/validate-email/${token}">valider votre compte</a> .`;
+    const html = `Bienvenue à la Cinémathèque <strong>${receiverUsername}</strong>,<br/><br/>Pour finaliser l'inscription, merci de <a href="http://localhost:5173/validate-email/${token}">valider votre compte</a> .`;
 
     EmailAPI._sendEmail(receiverEmail, html, env.registerUserEmailSubject);
   }
@@ -60,5 +60,10 @@ export class EmailAPI {
     const html = `${receiverUsername}, tu as oublié ton mot de passe ?<br/><br/>Tu peux en enregistrer un nouveau ici : <a href="http://localhost:5173/recover-password/${token}">demander un nouveau mot de passe</a> .<br/><br/>Le token est valide pendant 2H.`;
 
     EmailAPI._sendEmail(receiverEmail, html, env.PasswordRecoveryEmailSubject);
+  }
+
+  static async deletedAccountMail(receiverUsername, receiverEmail) {
+    const html = `${receiverUsername},<br/><br/>Votre compte a bien été supprimé. Nous espérons que vous reviendrez sur la Cinémathèque.`;
+    EmailAPI._sendEmail(receiverEmail, html, env.deletedAccountEmailSubject);
   }
 }
