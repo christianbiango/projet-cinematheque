@@ -5,7 +5,11 @@ import UpdatePasswordForm from "../../components/UpdatePasswordForm";
 const UpdatePassword = () => {
   const { updatePassword, user } = useContext(AuthContext);
   return (
-    <UpdatePasswordForm updatePassword={updatePassword} userId={user.id} />
+    <UpdatePasswordForm
+      updatePassword={updatePassword}
+      userId={user.id}
+      lostPassword={false}
+    />
   );
 };
 

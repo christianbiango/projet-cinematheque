@@ -9,25 +9,23 @@ import { EmailAPI } from "../services/emailUser.service.js";
 
 /**
  * Cette fonction vérifie le nouvel utilisateur et envoie un mail de demande de confirmation d'inscription au nouvel utilisateur
- * @param {Object} req - Request Object
- * @param {Object} res - Response Object
- * Renvoit status :
+ * Retourne le status :
  *    - 201 : inscription réussie - attente de validation par mail
- *    - 500 : un compte existe déjà avec cette adresse e-mail / erreur du serveur
+ *    - 400 : un compte existe déjà avec cette adresse e-mail
  */
 export const checkUserSignup = async (req, res) => {
   try {
-    // 1. Utiliser Sanitize sur les  données de l'utilisateur pour supprimer  tout ce qui n'est pas des lettres
-    const formData = req.body;
     const { username, email, password } = res.locals;
-    // 2. Continuer l'inscription
     const { userModel, userToValidateModel } = await getUserModel();
 
     const isUsedMail = await userModel.findOne({
       email: email,
     });
 
-    if (isUsedMail) throw new Error("Un compte existe déjà avec ce mail");
+    if (isUsedMail)
+      return res
+        .status(400)
+        .json({ message: "Un compte existe déjà avec ce mail" });
 
     // Formulaire valide -> Stocker l'utilisateur avec token en base de données pour attendre la confirmation par mail
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -50,7 +48,7 @@ export const checkUserSignup = async (req, res) => {
 
     res.status(201).json({
       message: "Merci de confirmer votre inscription par mail!",
-      storeUser,
+      status: 201,
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -61,7 +59,8 @@ export const checkUserSignup = async (req, res) => {
  * Cette fonction inscrit le nouvel utilisateur si son token de validation est valable
  * Renvoie status :
  *    - 201 : inscription réussie - attente de validation par mail
- *    - 500 : un compte existe déjà avec cette adresse e-mail / erreur du serveur
+ *    - 404 : Le compte à valider n'existe plus
+ *    -  400 : Token invalide
  */
 export const signup = async (req, res) => {
   try {
@@ -75,15 +74,17 @@ export const signup = async (req, res) => {
 
     // Aucun utilisateur dans la collection des utilisateurs à valider
     if (!newUser)
-      return res
-        .status(404)
-        .json({ message: "Votre mail n'est pas en attente de validité." });
+      return res.status(404).json({
+        message: "Votre compte n'est pas en attente de validité.",
+        status: 404,
+      });
 
     // token expiré
     if (newUser.token.expires < Date.now())
-      throw new Error(
-        "Le jeton n'est plus valide. Merci d'en demander un nouveau"
-      );
+      return res.status(400).json({
+        message: "Le jeton n'est plus valide. Merci d'en demander un nouveau",
+        status: 400,
+      });
     // Token valide
     const newUserToInsert = {
       username: newUser.username,
@@ -94,24 +95,22 @@ export const signup = async (req, res) => {
       FavouriteMovies: newUser.FavouriteMovies,
       seeLaterMovies: newUser.seeLaterMovies,
     };
-    console.log(newUserToInsert);
+
     await userModel.create(newUserToInsert);
 
     // Supprimer l'utilisateur de la collection de validation d'inscription. Il est possible qu'il ait demandé plusieurs fois un mail -> deleteMany
     await userToValidateModel.deleteMany({ email: newUser.email });
-    console.log("yes");
 
-    res.status(201).json({ message: "Utilisateur créé avec succès!", newUser });
+    res
+      .status(201)
+      .json({ message: "Compte activé avec succès!", status: 201 });
   } catch (err) {
-    console.log(err);
     res.status(500).json({ message: err.message });
   }
 };
 
 /**
  * Cette fonction connecte l'utilisateur si ses entrées du formulaire de connexion sont valides
- * @param {Object} req - Request Object
- * @param {Object} res - Response Object
  * Renvoit un status :
  *    - 200 : connexion réussie
  *    - 404 : utilisateur non trouvé
@@ -160,8 +159,6 @@ export const login = async (req, res) => {
 
 /**
  * Cette fonction déconnecte l'utilisateur
- * @param {Object} req - Request Object
- * @param {Object} res - Response Object
  * Renvoit un status :
  *    - 200 : déconnexion réussie réussie,
  *    - 500 : erreur du serveur
@@ -171,44 +168,46 @@ export const logout = async (req, res) => {
     req.session.destroy();
     res.status(200).end(); // end() met conclut le processus de réponse sans inclure aucune donnée
   } catch (err) {
-    console.log(err);
     res.status(500).json({ message: err.message });
   }
 };
 
 /**
  * Cette fonction supprime le compte de l'utilsateur, ainsi que toutes ses demandes de modification de compte
- * @param {Object} req - Request Object
- * @param {Object} res - Response Object
  * Renvoit un status :
  *    - 204 : Suppression réussie
  */
 export const deleteAccount = async (req, res) => {
   try {
-    console.log(req.query);
     const { userId } = req.query;
     const { userModel } = await getUserModel();
     const { forgottenPasswordModel } = await getForgottenPasswordModel();
+
+    // Récupérer les détails de l'utilisateur
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "Utilisateur non trouvé", status: 404 });
+    }
 
     await Promise.all([
       userModel.deleteOne({ _id: userId }),
       forgottenPasswordModel.deleteMany({ _id: userId }),
     ]);
 
-    return res.status(204).send("Compte supprimé");
+    await EmailAPI.deletedAccountMail(user.username, user.email);
+
+    return res.status(204).end();
   } catch (err) {
-    console.log(err);
+    res.status(500).json({ message: err.message });
   }
 };
 
 /**
- * Cette fonction vérifie si l'utilsateur est connecté à chacune de ses actions
- * @param {Object} req - Request Object
- * @param {Object} res - Response Object
+ * Cette fonction vérifie si l'utilsateur est connecté sur les routes de connexion
  * Renvoit un status :
- *    - 200 : connexion réussie,
- *    - 404 : d'utilisateur non trouvé,
- *    - 400 : mot de passe incorrecte,
+ *    - 200 : utilisateur connecté,
  *    - 500 : erreur du serveur
  */
 export const checkSession = async (req, res) => {
@@ -231,11 +230,9 @@ export const checkSession = async (req, res) => {
         logout(); // Détruire la session, puis Mongo Store supprime la sessions dépréciée en bdd dans les 24h
       }
     } else {
-      // axios d'AuthContext détectera qu'il s'agit d'une erreur et la requête sera considérée comme échoéue
-      res.status(401).json({
+      res.json({
         isLoggedIn: false,
-        message: "Veuillez-vous connecter pour accéder à la Cinémathèque",
-      }); // 401 Unauthorized
+      });
     }
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -380,7 +377,7 @@ export const getUserInformations = async (req, res) => {
 
 /**
  * Cette fonction met à jour les informations de l'utilisateur connecté
- * @returns {Object} - les informations du compte mis à jour
+ * @returns {Object} - Le message de succès en status 200
  */
 export const updateUserInformations = async (req, res) => {
   try {
@@ -390,13 +387,17 @@ export const updateUserInformations = async (req, res) => {
 
     const updatedUser = await userModel.findByIdAndUpdate(
       { _id: userId },
-      { username: username }, // On ne récupère que l'username pour ne pas mettre à jour un autre champs accidentellement
-      { new: true } // Pour retourner le document après la mise à jour
+      { username: username } // On ne récupère que l'username pour ne pas mettre à jour un autre champs accidentellement
+      //{ new: true } // Pour retourner le document après la mise à jour
     );
 
-    return res.status(200).json(updatedUser);
+    return res.status(200).json({
+      message: "Compte mis à jour avec succès!",
+      status: 200,
+      data: username,
+    });
   } catch (err) {
-    console.log(err.message);
+    return res.status(500).json({ message: err.message });
   }
 };
 
@@ -412,27 +413,44 @@ export const updatePassword = async (req, res) => {
     const { userModel } = await getUserModel();
     const { forgottenPasswordModel } = await getForgottenPasswordModel();
 
+    // 1. Vérifier que le compte est toujours en attente de récupération de mot de passe
+    const forgottenUser = await forgottenPasswordModel.findOne({
+      _id: userId,
+    });
+
+    if (!forgottenUser)
+      return res.status(404).json({
+        message:
+          "Le compte n'est pas en attente de récupération de mot de passe",
+        status: 404,
+      });
+
     /* Vérifier que le nouveau mot de passe n'est pas le même que l'ancien */
 
-    // 1. Récupérer l'ancien mot de passe
+    // 2. Récupérer l'ancien mot de passe
     const currentUser = await userModel.findOne({
       _id: userId,
     });
 
-    if (!currentUser) throw new Error("Utilisateur introuvable");
+    if (!currentUser)
+      return res
+        .status(404)
+        .json({ message: "Utilisateur introuvable", status: 404 });
 
     const currentUserHashedPassword = currentUser.password;
 
-    // 2. Comparer les deux mots de passe
+    // 3. Comparer les deux mots de passe
     const comparePassword = await bcrypt.compare(
       password,
       currentUserHashedPassword
     );
 
     if (comparePassword)
-      throw new Error(
-        "Le nouveau mot de passe ne peut pas être identique au précédent"
-      );
+      return res.status(400).json({
+        message:
+          "Le nouveau mot de passe ne peut pas être identique au précédent",
+        status: 400,
+      });
 
     /* Mettre à jour le mot de passe */
 
@@ -443,9 +461,11 @@ export const updatePassword = async (req, res) => {
     // Supprimer toute occurrence de mot de passe oublié
     await forgottenPasswordModel.deleteMany({ _id: userId });
 
-    return res.status(200).json(currentUser);
+    return res
+      .status(200)
+      .json({ message: "Mot de passe mis à jour avec succès !", status: 200 });
   } catch (err) {
-    console.log(err.message);
+    res.status(500).json({ message: err.message });
   }
 };
 
@@ -456,7 +476,6 @@ export const updatePassword = async (req, res) => {
  */
 export const updatePasswordRequest = async (req, res) => {
   try {
-    const { dataForm } = req.body.params;
     const { email } = res.locals;
     const { userModel } = await getUserModel();
     const { forgottenPasswordModel } = await getForgottenPasswordModel();
@@ -484,9 +503,10 @@ export const updatePasswordRequest = async (req, res) => {
     res.status(200).json({
       message:
         "Si un compte est associé à ce mail, vous obtiendrez un lien d'accès par mail.",
+      status: 200,
     });
   } catch (err) {
-    console.log(err.message);
+    res.status(500).json({ message: err.message });
   }
 };
 
@@ -506,14 +526,22 @@ export const checkRecoverPasswordToken = async (req, res) => {
       "token._hex": ptoken,
     });
 
+    if (!recoverDocument)
+      return res.status(404).json({
+        message: "Le jeton n'est pas valide, merci d'en demander un autre.",
+        status: 404,
+      });
+
     // token expiré
     if (recoverDocument.token.expires < Date.now())
-      throw new Error(
-        "Le jeton n'est plus valide. Merci d'en demander un nouveau"
-      );
+      return res.status(400).json({
+        message: "Le jeton n'est plus valide. Merci d'en demander un nouveau.",
+        status: 400,
+      });
+
     // Token valide
-    res.status(200).json(recoverDocument.account);
+    res.status(200).json({ data: recoverDocument.account, status: 200 });
   } catch (err) {
-    console.log(err.message);
+    res.status(500).json({ message: err.message });
   }
 };

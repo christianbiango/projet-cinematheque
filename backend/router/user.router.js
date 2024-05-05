@@ -10,8 +10,6 @@ import {
   getUserInformations,
   updateUserInformations,
   updatePassword,
-  updatePasswordRequest,
-  checkRecoverPasswordToken,
   deleteAccount,
 } from "../controllers/user.controller.js";
 
@@ -22,28 +20,30 @@ import {
 
 // MIDDLEWARES
 import prepareMoviesOperationsMiddleware from "../middleware/prepareMoviesOperationsMiddleware.js";
-import { updatePasswordRateLimiter } from "../middleware/rateLimiter.js";
+import {
+  updateAccountRateLimiter,
+  updatePasswordRateLimiter,
+} from "../middleware/rateLimiter.js";
 import updateUserMiddleware from "../middleware/UpdateUserMiddleware.js";
-import updatePasswordRequestMiddleware from "../middleware/updatePasswordRequestMiddleware.js";
 import updatePasswordMiddleware from "../middleware/updatePasswordMiddleware.js";
 
 const router = express.Router();
 
 // USER
 router.get("/account", getUserInformations);
-router.put("/update-account", updateUserMiddleware, updateUserInformations);
+router.put(
+  "/update-account",
+  updateAccountRateLimiter,
+  updateUserMiddleware,
+  updateUserInformations
+);
 router.put(
   "/update-password",
   updatePasswordRateLimiter,
   updatePasswordMiddleware,
   updatePassword
 ); // mettre à jouir le mot de passe de l'utilisateur connecté
-router.post(
-  "/update-password-request",
-  updatePasswordRequestMiddleware,
-  updatePasswordRequest
-); // Requête de mot de passe oublié, envoit par mail du lien
-router.get("/check-recover-password-token", checkRecoverPasswordToken); // Vérification du token Lorsque l'utilisateur entre le lien de récupération de mot de passe
+
 router.delete("/logout", logout);
 router.delete("/delete-account", deleteAccount);
 

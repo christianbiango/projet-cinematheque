@@ -4,6 +4,8 @@ import { AuthContext } from "../../context/AuthContext";
 
 export default function Login() {
   const [formData, setFormData] = useState([]);
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [loginError, setLoginError] = useState("");
   const { user, login } = useContext(AuthContext);
   const [emailErrorMessage, setEmailErrorMessage] = useState("");
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
@@ -20,29 +22,33 @@ export default function Login() {
   };
 
   const handleLogin = async () => {
-    const hasLoggedIn = await login(formData);
-    if (hasLoggedIn) navigate("/");
+    const loginTryResult = await login(formData);
+    if (loginTryResult === true) navigate("/");
+    else if (loginTryResult?.message)
+      setLoginError(loginTryResult.message); // data.message
+    else setLoginError(loginTryResult);
   };
 
   const submitForm = (e) => {
     e.preventDefault();
-    checkFormInput();
-    if (emailErrorMessage === "" && passwordErrorMessage === "") {
-      handleLogin();
-    }
+    setFormSubmitted(true);
+    const result = checkFormInput();
+
+    if (result) handleLogin();
   };
 
   const checkFormInput = () => {
-    const checkEmail = formData.email.trim().toLowerCase();
-    const checkPassword = formData.password.trim();
+    let checkEmail;
+    if (formData.email) checkEmail = formData.email.trim().toLowerCase();
+    const checkPassword = formData.password;
 
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    const passwordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/; // Au moins 8 caractères, avec au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial parmi : @$!%*?&
 
+    // Email
     switch (true) {
-      // Email
-      case checkEmail.length === 0 || checkEmail === null:
+      case checkEmail === undefined ||
+        checkEmail.length === 0 ||
+        checkEmail === null:
         setEmailErrorMessage("Vous avez oublié votre adresse email ?");
         break;
       case checkEmail.length > 32:
@@ -58,16 +64,24 @@ export default function Login() {
           "L'adresse email doit contenir uniquement des chaînes de caractères."
         );
         break;
+      default:
+        setEmailErrorMessage("");
+    }
+
+    // Password
+    switch (true) {
       // Password
-      case checkPassword.length === 0 || checkPassword === null:
+      case checkPassword === undefined ||
+        checkPassword.length === 0 ||
+        checkPassword === null:
         setPasswordErrorMessage("Vous n'avez pas saisi de mot de passe.");
         break;
       case !typeof checkPassword === "string":
         setPasswordErrorMessage("Le format du mot de passe est incorrecte");
         break;
       default:
-        setEmailErrorMessage("");
         setPasswordErrorMessage("");
+        return true; // Toutes les vérifications ont été passées
     }
   };
 
@@ -75,6 +89,9 @@ export default function Login() {
     <>
       <main className="bg-gray-100 min-h-screen flex justify-center items-center">
         <div className="bg-white p-8 rounded-lg shadow-md">
+          {formSubmitted && loginError && (
+            <span className="text-red-500 text-sm">{loginError}</span>
+          )}
           <h1 className="text-2xl font-semibold mb-4">
             Connectez-vous à la Cinémathèque
           </h1>
@@ -96,7 +113,7 @@ export default function Login() {
                 onChange={_onChangeInput}
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               />
-              {emailErrorMessage && (
+              {formSubmitted && emailErrorMessage && (
                 <span className="text-red-500 text-sm">
                   {emailErrorMessage}
                 </span>
@@ -120,7 +137,7 @@ export default function Login() {
                 onChange={_onChangeInput}
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               />
-              {passwordErrorMessage && (
+              {formSubmitted && passwordErrorMessage && (
                 <span className="text-red-500 text-sm">
                   {passwordErrorMessage}
                 </span>

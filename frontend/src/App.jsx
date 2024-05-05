@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation, useParams } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Login from "./pages/AuthPages/Login";
 import Register from "./pages/AuthPages/Register";
 import Home from "./pages/Home";
@@ -9,7 +9,7 @@ import ConfirmRegistration from "./pages/AuthPages/ConfirmRegistration";
 import AccountHome from "./pages/AccountPages/AccountHome.jsx";
 import UpdateUser from "./pages/AccountPages/UpdateUser.jsx";
 import UpdatePassword from "./pages/AccountPages/UpdatePassword.jsx";
-import UpdatePasswordRequest from "./pages/AccountPages/UpdatePasswordRequest.jsx";
+import UpdatePasswordRequest from "./pages/AuthPages/UpdatePasswordRequest.jsx";
 import RecoverPassword from "./pages/AuthPages/RecoverPassword.jsx";
 
 function App() {

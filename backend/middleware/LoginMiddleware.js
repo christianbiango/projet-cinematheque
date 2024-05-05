@@ -8,17 +8,22 @@ import { formValidator } from "./formValidator/FormValidator.js";
  */
 export default function loginMiddleware(req, res, next) {
   const { email, password } = req.body;
-  const cleanedEmail = sanitize(email.trim().toLowerCase());
+
+  let reqEmail = email;
+  if (email) reqEmail = email.trim().toLowerCase();
+  const cleanedEmail = sanitize(reqEmail);
   const cleanedPassword = sanitize(password);
 
   // Valider l'e-mail
   if (!formValidator.checkEmail(cleanedEmail)) {
-    return res.status(400).json({ message: "Email invalide" });
+    return res.status(400).json({ message: "Email invalide", field: "email" });
   }
 
   // Valider le mot de passe
   if (!formValidator.checkLoginPassword(cleanedPassword)) {
-    return res.status(400).json({ message: "Mot de passe invalide" });
+    return res
+      .status(400)
+      .json({ message: "Mot de passe invalide", field: "password" });
   }
 
   res.locals.email = cleanedEmail;

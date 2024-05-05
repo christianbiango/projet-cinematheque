@@ -4,6 +4,9 @@ import { AuthContext } from "../../context/AuthContext";
 
 const Register = () => {
   const [formData, setFormData] = useState([]);
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [registerResult, setRegisterResult] = useState(null);
+
   const { user, checkRegister } = useContext(AuthContext);
 
   const [usernameErrorMessage, setUsernameErrorMessage] = useState("");
@@ -19,23 +22,34 @@ const Register = () => {
   const _onChangeInput = (e) => {
     const { name, value } = e.target;
     setFormData((formData) => ({ ...formData, [name]: value }));
-    console.log(formData);
   };
 
   const submitForm = (e) => {
     e.preventDefault();
-    checkFormInput();
-    handleRegister();
+    setFormSubmitted(true);
+
+    const result = checkFormInput();
+
+    if (result) handleRegister();
   };
 
   const handleRegister = async () => {
-    const checked = await checkRegister(formData);
-    console.log(checked);
+    const registerTryResult = await checkRegister(formData);
+
+    // Le rate limit renverra une chaine de caractère directement alors que notre API renvoit la réponse dans un objet
+    if (registerTryResult?.message && registerTryResult?.status)
+      setRegisterResult({
+        message: registerTryResult.message,
+        status: registerTryResult.status,
+      });
+    else setRegisterResult(registerTryResult);
   };
 
   const checkFormInput = () => {
-    const checkUsername = formData.username.trim();
-    const checkEmail = formData.email.trim().toLowerCase();
+    let checkUsername, checkEmail;
+    if (formData.username) checkUsername = formData.username.trim();
+    if (formData.email) checkEmail = formData.email.trim().toLowerCase();
+
     const checkPassword = formData.password;
 
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -43,9 +57,11 @@ const Register = () => {
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/; // Au moins 8 caractères, avec au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial parmi : @$!%*?&
     const usernameRegex = /^[a-zA-Z0-9éèàôçÉÈÀÔÇ'-]+$/u; // Chiffres, lettres, caractères diacritiques comme é,ê... et apostrophe
 
+    // username
     switch (true) {
-      // username
-      case checkUsername.length === 0 || checkUsername === null:
+      case checkUsername === undefined ||
+        checkUsername.length === 0 ||
+        checkUsername === null:
         setUsernameErrorMessage("Vous avez oublié votre nom d'utilisateur ?");
         break;
       case checkUsername.length > 32:
@@ -61,8 +77,15 @@ const Register = () => {
       case !typeof checkUsername === "string":
         setUsernameErrorMessage("Le nom d'utilisateur est incorrecte.");
         break;
-      // Email
-      case checkEmail.length === 0 || checkEmail === null:
+      default:
+        setUsernameErrorMessage("");
+    }
+
+    // Email
+    switch (true) {
+      case checkEmail === undefined ||
+        checkEmail.length === 0 ||
+        checkEmail === null:
         setEmailErrorMessage("Vous avez oublié votre adresse email ?");
         break;
       case checkEmail.length > 32:
@@ -78,8 +101,15 @@ const Register = () => {
           "L'adresse email doit contenir uniquement des chaînes de caractères."
         );
         break;
-      // Password
-      case checkPassword.length === 0 || checkPassword === null:
+      default:
+        setEmailErrorMessage("");
+    }
+
+    // Password
+    switch (true) {
+      case checkPassword === undefined ||
+        checkPassword.length === 0 ||
+        checkPassword === null:
         setPasswordErrorMessage("Vous n'avez pas saisi de mot de passe.");
         break;
       case !typeof checkPassword === "string":
@@ -91,9 +121,8 @@ const Register = () => {
         );
         break;
       default:
-        setUsernameErrorMessage("");
-        setEmailErrorMessage("");
         setPasswordErrorMessage("");
+        return true;
     }
   };
 
@@ -101,6 +130,15 @@ const Register = () => {
     <>
       <main className="bg-gray-100 min-h-screen flex justify-center items-center">
         <div className="bg-white p-8 rounded-lg shadow-md">
+          {formSubmitted && registerResult && (
+            <span
+              className={`text-${
+                registerResult.status === 201 ? "green" : "red"
+              }-500 text-sm`}
+            >
+              {registerResult.message}
+            </span>
+          )}
           <h1 className="text-2xl font-semibold mb-4">
             Inscrivez-vous à la Cinémathèque
           </h1>
@@ -111,19 +149,19 @@ const Register = () => {
                 htmlFor="username"
                 className="block text-sm font-medium text-gray-700"
               >
-                Entrez votre nom d'utilisateur
+                Entrez votre nom d&apos;utilisateur
                 <span className="text-red-500">*</span>
               </label>
               <input
                 id="username"
                 type="text"
+                required
                 placeholder="Entrez votre nom d'utilisateur"
                 name="username"
-                required
                 onChange={_onChangeInput}
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               />
-              {usernameErrorMessage && (
+              {formSubmitted && usernameErrorMessage && (
                 <span className="text-red-500 text-sm">
                   {usernameErrorMessage}
                 </span>
@@ -141,13 +179,13 @@ const Register = () => {
               <input
                 id="email"
                 type="email"
+                required
                 placeholder="Entrez votre email"
                 name="email"
-                required
                 onChange={_onChangeInput}
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               />
-              {emailErrorMessage && (
+              {formSubmitted && emailErrorMessage && (
                 <span className="text-red-500 text-sm">
                   {emailErrorMessage}
                 </span>
@@ -165,13 +203,13 @@ const Register = () => {
               <input
                 id="password"
                 type="password"
+                required
                 placeholder="Entrez votre mot de passe"
                 name="password"
-                required
                 onChange={_onChangeInput}
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               />
-              {passwordErrorMessage && (
+              {formSubmitted && passwordErrorMessage && (
                 <span className="text-red-500 text-sm">
                   {passwordErrorMessage}
                 </span>

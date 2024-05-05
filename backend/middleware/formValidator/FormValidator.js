@@ -39,6 +39,18 @@ export class formValidator {
   }
 
   /**
+   * Cette méthode vérifie les deux champs de mot de passe lors de la mise à jour d'un mot de passe
+   * @param {String} password
+   * @param {String} passwordConfirm
+   * @returns
+   */
+  static checkPasswordUpdate(password, passwordConfirm) {
+    return (
+      formValidator.checkPassword(password) && password === passwordConfirm
+    );
+  }
+
+  /**
    * Cette méthode vérifie le mot de passe lors de la connexion. Aucun regex n'est passé
    * @param {String} loginPassword
    * @returns {Boolean}

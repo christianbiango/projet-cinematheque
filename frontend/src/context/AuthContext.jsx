@@ -28,23 +28,14 @@ export const AuthProvider = ({ children }) => {
       const { data, status } = await axios.post(URL.USER_LOGIN, dataForm, {
         withCredentials: true,
       }); // data = réponse d'axios. // withCredentials : envoit du cookie de session à l'API
-
       if (status === 200) {
         setUser(data.user);
         setIsLoading(false);
         return true;
       }
     } catch (err) {
-      console.log(err);
-      if (
-        err.response.status === 404 ||
-        err.response.status === 400 ||
-        err.response.status === 401
-      )
-        console.log(err.response.data.message);
-      // Mail ou mot de passe incorrecte
-      else console.log(err);
       setIsLoading(false);
+      return err.response.data;
     }
   };
 
@@ -79,21 +70,18 @@ export const AuthProvider = ({ children }) => {
   const register = async (vtoken) => {
     setIsLoading(true);
     try {
-      const { status } = await axios.get(URL.USER_SIGNUP, {
+      const { data, status } = await axios.get(URL.USER_SIGNUP, {
         params: {
           vtoken: vtoken,
         },
         withCredentials: true,
       });
       if (status === 201) {
-        setIsLoading(false);
-        return true;
+        return data;
       }
     } catch (err) {
-      console.log(err);
-      if (err.response.status === 400)
-        console.log(err.response.data.message); // Le middleware a échoué
-      else console.log(err);
+      return err.response.data;
+    } finally {
       setIsLoading(false);
     }
   };
@@ -106,18 +94,19 @@ export const AuthProvider = ({ children }) => {
   const checkRegister = async (dataForm) => {
     setIsLoading(true);
     try {
-      const { status } = await axios.post(URL.USER_CHECK_SIGNUP, dataForm, {
-        withCredentials: true,
-      });
+      const { data, status } = await axios.post(
+        URL.USER_CHECK_SIGNUP,
+        dataForm,
+        {
+          withCredentials: true,
+        }
+      );
       if (status === 201) {
-        setIsLoading(false);
-        return true;
+        return data;
       }
     } catch (err) {
-      console.log(err);
-      if (err.response.status === 400)
-        console.log(err.response.data.message); // Le middleware a échoué
-      else console.log(err);
+      return err.response.data;
+    } finally {
       setIsLoading(false);
     }
   };
@@ -138,9 +127,6 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(false);
     } catch (err) {
       console.log(err);
-      if (err.response?.status === 401) console.log(err.response.data.message);
-      // Veuillez-vous connecter pour accéder à la Cinémathèqie
-      else console.log(err);
       setIsLoading(false);
     }
   };
@@ -337,10 +323,11 @@ export const AuthProvider = ({ children }) => {
 
       if (status === 200) {
         console.log(data);
+        setUser({ ...user, username: data.data });
         return data;
       }
     } catch (err) {
-      console.log(err);
+      return err.response.data;
     }
   };
 
@@ -348,26 +335,38 @@ export const AuthProvider = ({ children }) => {
    * Cette fonction met à jour le mot de passe de l'utilisateur lorsque celui-ci est connecté
    * @param {Object} dataForm
    * @param {String} userId
+   * @param {Boolean} lostPassword - Est-ce qu'il s'agit d'une demande de récupération de mot de passe ou si l'utilsiateur est déjà connecté
    * @returns {Object} - Le message de succès ou d'échec
    */
-  const updatePassword = async (dataForm, userId) => {
+  const updatePassword = async (dataForm, userId, lostPassword = false) => {
     try {
-      const { data, status } = await axios.put(URL.UPDATE_USER_PASSWORD, {
-        params: {
-          dataForm: dataForm,
-          userId: userId,
+      const endpoint = lostPassword
+        ? URL.UPDATE_USER_LOST_PASSWORD
+        : URL.UPDATE_USER_PASSWORD;
+      const { data, status } = await axios.put(
+        endpoint,
+        {
+          params: {
+            dataForm: dataForm,
+            userId: userId,
+          },
         },
-        withCredentials: true,
-      });
+        { withCredentials: true }
+      );
 
       if (status === 200) {
         return data;
       }
     } catch (err) {
-      console.log(err);
+      return err.response.data;
     }
   };
 
+  /**
+   * Cette fonction tente d'envoyer un lien de réintialisation de mot de passe à l'utilisateur par mail
+   * @param {Object} dataForm
+   * @returns {Object} - Le message de succès ou d'erreur
+   */
   const updatePasswordRequest = async (dataForm) => {
     try {
       const { data, status } = await axios.post(
@@ -384,7 +383,7 @@ export const AuthProvider = ({ children }) => {
         return data;
       }
     } catch (err) {
-      console.log(err);
+      return err.response.data;
     }
   };
 
@@ -409,7 +408,7 @@ export const AuthProvider = ({ children }) => {
         return data;
       }
     } catch (err) {
-      console.log(err);
+      return err.response.data;
     }
   };
 
@@ -425,8 +424,14 @@ export const AuthProvider = ({ children }) => {
         },
         withCredentials: true,
       });
+
+      return {
+        message:
+          "Votre compte a été supprimé avec succès. Vous allez être redirigé...",
+        status: 204,
+      };
     } catch (err) {
-      console.log(err);
+      return err.response.data;
     }
   };
 
